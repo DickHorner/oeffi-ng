@@ -1926,7 +1926,7 @@ public class TripDetailsActivity extends OeffiActivity implements LocationListen
             }
             if (diffMaxSecs < 0) {
                 timeIsCritical = true;
-                transferText = getString(R.string.directions_trip_conneval_missed, diffMaxMins, timeExplainText);
+                transferText = getString(R.string.directions_trip_conneval_missed, -diffMaxMins, timeExplainText);
                 timeText = Long.toString(diffMaxMins);
                 if (isWalkIcon)
                     iconResId = R.drawable.ic_directions_walk_sprint_grey600_24dp;
