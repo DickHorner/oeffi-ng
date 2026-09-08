@@ -156,10 +156,6 @@ public class ResourcesInterceptor extends Resources {
             overloadedColorIsForDarkMode = null;
         }
 
-        private Properties getAllResourcesAsProperties() throws IllegalAccessException {
-            return ResourcesInterceptor.getAllResourcesAsProperties(resources);
-        }
-
         private String getConfiguredValue(final int resId) {
             try {
                 if (configuredValues == null)
@@ -578,7 +574,13 @@ public class ResourcesInterceptor extends Resources {
 
     public static Properties getAllResourcesAsProperties() {
         try {
-            return mapper.getAllResourcesAsProperties();
+            final Resources resources;
+            if (mapper == null) {
+                resources = Application.getInstance().getResources();
+            } else {
+                resources = mapper.resources;
+            }
+            return ResourcesInterceptor.getAllResourcesAsProperties(resources);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
