@@ -25,7 +25,7 @@
     <string name="action_bar_overflow_description">More</string>
 
     <!-- activity titles -->
-    <string name="stations_activity_title">Nearby Stations</string>
+    <string name="stations_activity_title">Nearby …</string>
     <string name="station_details_activity_title">Station Departures</string>
     <string name="station_details_activity_short_title">Departures</string>
     <string name="directions_activity_title">Directions</string>
