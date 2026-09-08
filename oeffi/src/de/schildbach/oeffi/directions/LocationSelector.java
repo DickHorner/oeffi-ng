@@ -211,6 +211,8 @@ public class LocationSelector extends LinearLayout implements
         if (Objects.equals(networkId, this.networkId) && Objects.equals(usage, this.usage))
             return;
 
+        persist();
+
         this.networkId = networkId;
         this.usage = usage;
 
@@ -267,6 +269,7 @@ public class LocationSelector extends LinearLayout implements
         final SharedPreferences.Editor editor = preferences.edit();
         editor.putString(getPrefsStateKey(), Objects.serializeToString(prefState));
         editor.apply();
+        stateIsChanged = false;
     }
 
     private Item getItemByLocation(final Location location) {
