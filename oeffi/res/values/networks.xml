@@ -128,6 +128,8 @@
     <string name="network_vmobil_label">Vorarlberg</string>
     <string name="network_vmobil_comment">Bregenz, Dornbirn, Feldkirch, …&lt;br>local and regional</string>
 <!--    <string name="network_vmobil_comment">Not available, because the VVV explicitly desires not to be included in Offi. You can use the ÖBB instead, it works well for Vorarlberg too.</string>-->
+    <string name="network_swissotd_label">Swiss Open Transport Data</string>
+    <string name="network_swissotd_comment">long-distance, regional and local</string>
     <string name="network_vbl_label">Lucerne</string>
     <string name="network_vbl_comment">tram and bus only</string>
     <string name="network_zvv_label">Zurich</string>

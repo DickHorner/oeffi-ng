@@ -128,6 +128,8 @@
     <string name="network_vmobil_label">Vorarlberg</string>
     <string name="network_vmobil_comment">Bregenz, Dornbirn, Feldkirch, …&lt;br>Lokal- und Regionalverkehr (TG:Vmobil)</string>
 <!--    <string name="network_vmobil_comment">Nicht verfügbar, weil der VVV ausdrücklich darum gebeten hat, nicht in Öffi enthalten zu sein. Du kannst stattdessen die ÖBB verwenden, das funktioniert für Vorarlberg auch gut.</string>-->
+    <string name="network_swissotd_label">Swiss Open Transport Data</string>
+    <string name="network_swissotd_comment">Fern-, Regional- und Lokalverkehr (TG:OTD)</string>
     <string name="network_vbl_label">Luzern</string>
     <string name="network_vbl_comment">nur Tram und Bus (TG:VBL)</string>
     <string name="network_zvv_label">Zürich</string>
