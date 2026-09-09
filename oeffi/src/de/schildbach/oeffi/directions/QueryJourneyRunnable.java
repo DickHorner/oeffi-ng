@@ -288,7 +288,10 @@ public class QueryJourneyRunnable implements Runnable {
     protected void onBlocked(final HttpUrl url) {
         DialogBuilder.warn(parentActivity, R.string.directions_alert_blocked_title)
             .setMessage(parentActivity.getString(R.string.directions_alert_blocked_message, url.host()))
-            .setPositiveButton(R.string.directions_alert_blocked_button_retry, (dialog, which) -> clickedView.performClick())
+            .setPositiveButton(R.string.directions_alert_blocked_button_retry, (dialog, which) -> {
+                if (clickedView != null)
+                    clickedView.performClick();
+            })
             .setNegativeButton(R.string.directions_alert_blocked_button_dismiss, null)
             .show();
     }
@@ -300,7 +303,10 @@ public class QueryJourneyRunnable implements Runnable {
     protected void onInternalError(final HttpUrl url) {
         DialogBuilder.warn(parentActivity, R.string.directions_alert_internal_error_title)
             .setMessage(parentActivity.getString(R.string.directions_alert_internal_error_message, url.host()))
-            .setPositiveButton(R.string.directions_alert_internal_error_button_retry, (dialog, which) -> clickedView.performClick())
+            .setPositiveButton(R.string.directions_alert_internal_error_button_retry, (dialog, which) -> {
+                if (clickedView != null)
+                    clickedView.performClick();
+            })
             .setNegativeButton(R.string.directions_alert_internal_error_button_dismiss, null)
             .show();
     }
