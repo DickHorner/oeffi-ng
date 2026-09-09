@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="@string/network_preferences_title">
+
+    <de.schildbach.oeffi.preference.CustomPreference
+        android:key="network_provider"
+        android:title="@string/network_preferences_provider_title"
+        android:summary="@string/network_preferences_provider_summary" />
+    <de.schildbach.oeffi.preference.CustomPreference
+        android:key="network_credentials"
+        android:title="@string/network_preferences_credentials_title"
+        android:summary="@string/network_preferences_credentials_summary" />
+
+</PreferenceScreen>

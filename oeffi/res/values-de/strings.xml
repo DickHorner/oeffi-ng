@@ -57,8 +57,6 @@
 
     <!-- preferences -->
     <string name="global_preferences_title">Allgemein</string>
-    <string name="global_preferences_network_provider_title">Verkehrsnetz</string>
-    <string name="global_preferences_network_provider_summary">Region und Quelle der Daten wählen.\n[%s]</string>
     <string name="global_preferences_show_hints_title">Tipps zeigen</string>
     <string name="global_preferences_show_hints_summary">Hin und wieder einen nützlichen Tipp anzeigen.</string>
     <string name="global_preferences_check_for_updates_title">Auf Updates prüfen</string>
@@ -67,6 +65,15 @@
     <string name="global_preferences_location_settings_summary">Einstellung der Standortbestimmung, z.B. GPS.</string>
     <string name="global_preferences_battery_optimizations_title">Akku-Leistungsoptimierung</string>
     <string name="global_preferences_battery_optimizations_summary">Wenn das App-Widget keine Abfahrtszeiten laden kann, während dein Gerät im Standby ist, dann solltest du die Akku-Leistungsoptimierung für Öffi abschalten.</string>
+
+    <!-- data provider preferences -->
+    <string name="network_preferences_title">Datenquelle</string>
+    <string name="network_preferences_provider_title">Verkehrsnetz</string>
+    <string name="network_preferences_provider_summary">Region und Quelle der Daten wählen.\n[%s]</string>
+    <string name="network_preferences_credentials_title">Zugangsdaten</string>
+    <string name="network_preferences_credentials_summary">Gib Zugangsdaten an, falls vom Provider benötigt, z.B. ein API-Token</string>
+    <string name="network_preferences_credentials_edit_title">Zugangsdaten …</string>
+    <string name="network_preferences_credentials_edit_hint">… für %1$s</string>
 
     <!-- preferences shortcuts -->
     <string name="shortcuts_preferences_title">Startbildschirm-Verknüpfungen</string>

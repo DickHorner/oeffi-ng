@@ -20,19 +20,10 @@ package de.schildbach.oeffi.preference;
 import android.os.Bundle;
 
 import de.schildbach.oeffi.R;
-import de.schildbach.oeffi.network.NetworkPickerActivity;
 
 public class CommonFragment extends PreferenceFragment {
     @Override
     public void onCreatePreferences(@androidx.annotation.Nullable final Bundle savedInstanceState, @androidx.annotation.Nullable final String rootKey) {
         addPreferencesFromResource(R.xml.preference_common);
-    }
-
-    public static class NetworkProviderActionHandler extends ActionHandler {
-        @Override
-        public boolean handleAction(final PreferenceActivity context, final String prefkey) {
-            NetworkPickerActivity.start(context, false);
-            return true;
-        }
     }
 }

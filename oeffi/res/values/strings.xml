@@ -57,8 +57,6 @@
 
     <!-- global preferences -->
     <string name="global_preferences_title">Common</string>
-    <string name="global_preferences_network_provider_title">Transport network</string>
-    <string name="global_preferences_network_provider_summary">Select region and source of data to be used.\n[%s]</string>
     <string name="global_preferences_show_hints_title">Show hints</string>
     <string name="global_preferences_show_hints_summary">Show useful hints now and then.</string>
     <string name="global_preferences_check_for_updates_title">Check for updates</string>
@@ -67,6 +65,15 @@
     <string name="global_preferences_location_settings_summary">Enable location providers, e.g. GPS.</string>
     <string name="global_preferences_battery_optimizations_title">Battery optimizations</string>
     <string name="global_preferences_battery_optimizations_summary">If the app-widget cannot fetch departure times while your device is in standby, you should disable battery optimizations for Öffi.</string>
+
+    <!-- data provider preferences -->
+    <string name="network_preferences_title">Data Provider</string>
+    <string name="network_preferences_provider_title">Transport network</string>
+    <string name="network_preferences_provider_summary">Select region and source of data to be used.\n[%s]</string>
+    <string name="network_preferences_credentials_title">Credentials</string>
+    <string name="network_preferences_credentials_summary">Provide credentials if required by the provider, e.g. an API token</string>
+    <string name="network_preferences_credentials_edit_title">Enter Credentials …</string>
+    <string name="network_preferences_credentials_edit_hint">… for %1$s</string>
 
     <!-- preferences shortcuts -->
     <string name="shortcuts_preferences_title">Homescreen Shortcuts</string>

@@ -19,14 +19,10 @@ package de.schildbach.oeffi.preference;
 
 import android.os.Bundle;
 
-import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
 
 import de.schildbach.oeffi.Application;
-import de.schildbach.oeffi.Constants;
 import de.schildbach.oeffi.R;
-import de.schildbach.oeffi.network.NetworkResources;
-import de.schildbach.pte.NetworkId;
 
 public class SettingsFragment extends PreferenceFragment {
     @Override
@@ -37,22 +33,5 @@ public class SettingsFragment extends PreferenceFragment {
         aboutPreferenceScreen.setFragment(AboutFragment.class.getName());
         aboutPreferenceScreen.setTitle(Application.getInstance().getString(R.string.about_title, Application.getInstance().getAppName()));
         addPreference(aboutPreferenceScreen);
-
-        setupActionPreference(Constants.PREFS_KEY_NETWORK_PROVIDER, CommonFragment.NetworkProviderActionHandler.class);
-        setupDynamicSummary(
-                Constants.PREFS_KEY_NETWORK_PROVIDER, R.string.global_preferences_network_provider_summary,
-                networkIdName -> {
-                    if (networkIdName == null)
-                        return "-";
-                    final NetworkId networkId = NetworkId.valueOf((String) networkIdName);
-                    final NetworkResources networkResources = NetworkResources.instance(getContext(), networkId);
-                    return networkResources.label;
-                });
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        preferenceChanged(Constants.PREFS_KEY_NETWORK_PROVIDER, Application.getInstance().prefsGetNetworkId(false).name());
     }
 }

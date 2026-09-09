@@ -62,6 +62,26 @@ public final class NetworkProviderFactory extends de.schildbach.pte.NetworkProvi
                 .getBoolean(Constants.PREFS_KEY_USER_INTERFACE_PREFERPREDEFINEDCOLORS_ENABLED, false));
     }
 
+    public String getPrefsKeyNetworkCredentials(final NetworkId networkId) {
+        return Constants.PREFS_KEY_NETWORK_CREDENTIALS_PREFIX + networkId.name();
+    }
+
+    public String getNetworkCredentials(final NetworkId networkId) {
+        return Application.getInstance().getSharedPreferences()
+                .getString(getPrefsKeyNetworkCredentials(networkId), null);
+    }
+
+    public void setNetworkCredentials(final NetworkId networkId, final String credentials) {
+        providerCache.remove(networkId);
+        final String prefsKeyNetworkCredentials = getPrefsKeyNetworkCredentials(networkId);
+        final SharedPreferences.Editor edit = Application.getInstance().getSharedPreferences().edit();
+        if (credentials.isEmpty())
+            edit.remove(prefsKeyNetworkCredentials);
+        else
+            edit.putString(prefsKeyNetworkCredentials, credentials);
+        edit.apply();
+    }
+
     @Override
     public NetworkProvider getNetworkProvider(final NetworkId networkId) {
         setupStandard();
@@ -73,6 +93,7 @@ public final class NetworkProviderFactory extends de.schildbach.pte.NetworkProvi
         if (networkProvider instanceof NetworkApiProvider) {
             final NetworkApiProvider networkApiProvider = (NetworkApiProvider) networkProvider;
             final Application application = Application.getInstance();
+            networkApiProvider.setCredentials(getNetworkCredentials(networkId));
             networkApiProvider.setUserAgent(application.getUserAgent(networkApiProvider.getUserAgentType()));
             networkApiProvider.setUserInterfaceLanguage(application.getApplicationLanguage());
             networkApiProvider.setMessagesAsSimpleHtml(true);

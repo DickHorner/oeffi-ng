@@ -108,6 +108,17 @@ public abstract class PreferenceFragment extends androidx.preference.PreferenceF
         preference.setEnabled(false);
     }
 
+    protected void enablePreference(final String preferenceName) {
+        enablePreference(findPreference(preferenceName));
+    }
+
+    protected void enablePreference(final Preference preference) {
+        if (preference == null)
+            return;
+
+        preference.setEnabled(true);
+    }
+
     protected void removePreference(final String preferenceName) {
         removePreference(findPreference(preferenceName));
     }
