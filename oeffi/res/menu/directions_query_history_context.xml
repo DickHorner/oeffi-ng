@@ -6,6 +6,9 @@
         android:id="@+id/directions_query_history_context_show_trip"
         android:title="@string/directions_query_history_context_show_trip" />
     <item
+        android:id="@+id/directions_query_history_context_show_trip_original"
+        android:title="@string/directions_query_history_context_show_trip_original" />
+    <item
         android:id="@+id/directions_query_history_context_remove_trip"
         android:title="@string/directions_query_history_context_remove_trip" />
     <item

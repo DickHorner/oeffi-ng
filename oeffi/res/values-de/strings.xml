@@ -368,7 +368,8 @@
     <string name="directions_stored_trip_over_or_done">&#x2714;</string>
 
     <!-- query history context menu -->
-    <string name="directions_query_history_context_show_trip">Gespeicherte Fahrt anzeigen</string>
+    <string name="directions_query_history_context_show_trip">Gespeicherte Fahrt anzeigen (mit Update)</string>
+    <string name="directions_query_history_context_show_trip_original">Gespeicherte Fahrt anzeigen (ohne Update)</string>
     <string name="directions_query_history_context_remove_trip">Gespeicherte Fahrt vergessen</string>
     <string name="directions_query_history_context_remove_entry">Verbindungsanfrage entfernen</string>
     <string name="directions_query_history_context_add_favorite">Anfrage als Favorit markieren</string>
@@ -376,7 +377,8 @@
 
     <!-- query stored trip context menu -->
     <string name="directions_query_stored_trip_context_search">Alternative Verbindungen suchen</string>
-    <string name="directions_query_stored_trip_context_show">Anzeigen</string>
+    <string name="directions_query_stored_trip_context_show">Anzeigen (versucht Datenupdate)</string>
+    <string name="directions_query_stored_trip_context_show_original">Anzeigen (ohne Update)</string>
     <string name="directions_query_stored_trip_context_navigate">Navigieren</string>
     <string name="directions_query_stored_trip_context_remove">Löschen</string>
     <string name="directions_query_stored_trip_context_set_done">Als erledigt markieren</string>

@@ -30,7 +30,8 @@ public interface QueryHistoryClickListener {
             Location from, Location to, Location via,
             PTDate tripDepartureTime, PTDate tripArrivalTime,
             byte[] serializedTrip, String tripId,
-            byte[] serializedReloadRequest);
+            byte[] serializedReloadRequest,
+            boolean tryReload);
 
     void onSavedTripStartNavigation(
             int adapterPosition,

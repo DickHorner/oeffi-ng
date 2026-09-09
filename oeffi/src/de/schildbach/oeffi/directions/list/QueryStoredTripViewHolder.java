@@ -226,7 +226,8 @@ public class QueryStoredTripViewHolder extends RecyclerView.ViewHolder
                             from, to, via,
                             tripDepartureTime, tripArrivalTime,
                             serializedSavedTrip, tripId,
-                            serializedReloadRequest);
+                            serializedReloadRequest,
+                            true);
                 }
             }
         });
@@ -273,33 +274,38 @@ public class QueryStoredTripViewHolder extends RecyclerView.ViewHolder
                             from, to, via,
                             tripDepartureTime, tripArrivalTime,
                             serializedSavedTrip, tripId,
-                            serializedReloadRequest);
+                            serializedReloadRequest,
+                            true);
                     return true;
-                }
-                if (menuItemId == R.id.directions_query_stored_trip_context_navigate) {
+                } else if (menuItemId == R.id.directions_query_stored_trip_context_show_original) {
+                    clickListener.onSavedTripClick(position,
+                            from, to, via,
+                            tripDepartureTime, tripArrivalTime,
+                            serializedSavedTrip, tripId,
+                            serializedReloadRequest,
+                            false);
+                    return true;
+                } else if (menuItemId == R.id.directions_query_stored_trip_context_navigate) {
                     startNavigation(position, clickListener);
                     return true;
-                }
-                if (menuItemId == R.id.directions_query_stored_trip_context_remove) {
+                } else if (menuItemId == R.id.directions_query_stored_trip_context_remove) {
                     if (tripId != null) {
                         QueryStoredTripsProvider.delete(context.getContentResolver(), network, usage, tripId);
                     }
                     return true;
-                }
-                if (menuItemId == R.id.directions_query_stored_trip_context_search) {
+                } else if (menuItemId == R.id.directions_query_stored_trip_context_search) {
                     final QueryTripRunnable.TripRequestData requestData = (QueryTripRunnable.TripRequestData)
                             Objects.deserialize(serializedReloadRequest, true);
-                    if (requestData != null)
+                    if (requestData != null) {
                         clickListener.onSearchAgainClick(position,
                                 tripDepartureTime, tripArrivalTime, requestData);
+                    }
                     return true;
-                }
-                if (menuItemId == R.id.directions_query_stored_trip_context_set_done) {
+                } else if (menuItemId == R.id.directions_query_stored_trip_context_set_done) {
                     stateFlags |= QueryStoredTripsProvider.STATE_FLAG_DONE;
                     QueryStoredTripsProvider.updateStateFlags(context.getContentResolver(), network, usage, tripId, stateFlags);
                     return true;
-                }
-                if (menuItemId == R.id.directions_query_stored_trip_context_unset_done) {
+                } else if (menuItemId == R.id.directions_query_stored_trip_context_unset_done) {
                     stateFlags &=~ QueryStoredTripsProvider.STATE_FLAG_DONE;
                     QueryStoredTripsProvider.updateStateFlags(context.getContentResolver(), network, usage, tripId, stateFlags);
                     return true;

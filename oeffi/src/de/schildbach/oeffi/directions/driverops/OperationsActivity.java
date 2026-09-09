@@ -160,13 +160,14 @@ public class OperationsActivity extends DirectionsActivity {
             final Location from, final Location to, final Location via,
             final PTDate tripDepartureTime, final PTDate tripArrivalTime,
             final byte[] serializedTrip, final String tripId,
-            final byte[] serializedReloadRequest) {
+            final byte[] serializedReloadRequest,
+            final boolean tryReload) {
         final Trip trip = (Trip) Objects.deserialize(serializedTrip, true);
         if (trip == null) {
             new Toast(this).longToast(R.string.directions_query_history_invalid_blob);
             return;
         }
-        loadTripByTripRef(trip.tripRef, (loadedTrip) -> {
+        loadTripByTripRef(trip.tripRef, tryReload, (loadedTrip) -> {
             final Trip useTrip = loadedTrip != null ? loadedTrip : trip;
             final OperationDetailsActivity.RenderConfig config = new OperationDetailsActivity.RenderConfig();
             config.queryTripsRequestData = (QueryTripRunnable.TripRequestData) Objects.deserialize(serializedReloadRequest, true);

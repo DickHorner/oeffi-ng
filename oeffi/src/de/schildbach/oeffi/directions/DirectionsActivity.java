@@ -169,7 +169,7 @@ public class DirectionsActivity extends OeffiMainActivity implements
     private boolean timeIsToday;
     private TripsOverviewActivity.RenderConfig renderConfig;
 
-    private QueryTripRunnable queryTripRunnable;
+    private MyQueryTripRunnable queryTripRunnable;
     private String loadSharedTripMessageText;
     private HandlerThread backgroundThread;
     private Handler backgroundHandler;
@@ -854,7 +854,7 @@ public class DirectionsActivity extends OeffiMainActivity implements
                         final MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(bytes);
                         final TripRef tripRef = provider.unpackTripRefFromMessage(unpacker);
                         unpacker.close();
-                        loadTripByTripRef(tripRef, this::startTripDetailsActivityForTripAndFinishThis);
+                        loadTripByTripRef(tripRef, true, this::startTripDetailsActivityForTripAndFinishThis);
                     }
                 } else if (LINK_IDENTIFIER_SHARE_TRIP.equals(action) && linkArgs.length == 2) {
                     if (provider.hasCapabilities(Capability.TRIP_SHARING)) {
@@ -1562,8 +1562,9 @@ public class DirectionsActivity extends OeffiMainActivity implements
             final Location from, final Location to, final Location via,
             final PTDate tripDepartureTime, final PTDate tripArrivalTime,
             final byte[] serializedTrip, final String tripId,
-            final byte[] serializedReloadRequest) {
-        handleShowSavedTrip(from, to, via, tripDepartureTime, tripArrivalTime, serializedTrip, tripId, serializedReloadRequest);
+            final byte[] serializedReloadRequest,
+            final boolean tryReload) {
+        handleShowSavedTrip(from, to, via, tripDepartureTime, tripArrivalTime, serializedTrip, tripId, serializedReloadRequest, tryReload);
     }
 
     @Override
@@ -1607,31 +1608,28 @@ public class DirectionsActivity extends OeffiMainActivity implements
             @Nullable final byte[] serializedSavedTrip, final int menuItemId,
             @Nullable final Location menuItemLocation) {
         if (menuItemId == R.id.directions_query_history_context_show_trip) {
-            handleShowSavedTrip(from, to, via, null, null, serializedSavedTrip, null, null);
+            handleShowSavedTrip(from, to, via, null, null, serializedSavedTrip, null, null, true);
             return true;
-        }
-        if (menuItemId == R.id.directions_query_history_context_remove_trip) {
+        } else if (menuItemId == R.id.directions_query_history_context_show_trip_original) {
+            handleShowSavedTrip(from, to, via, null, null, serializedSavedTrip, null, null, false);
+            return true;
+        } else if (menuItemId == R.id.directions_query_history_context_remove_trip) {
             queryHistoryListAdapter.setSavedTrip(adapterPosition, 0, 0, null);
             return true;
-        }
-        if (menuItemId == R.id.directions_query_history_context_remove_entry) {
+        } else if (menuItemId == R.id.directions_query_history_context_remove_entry) {
             queryHistoryListAdapter.removeHistoryEntry(adapterPosition);
             ViewUtils.setVisibility(viewQueryHistoryEmpty, queryHistoryListAdapter.getItemCount() == 0);
             return true;
-        }
-        if (menuItemId == R.id.directions_query_history_context_add_favorite) {
+        } else if (menuItemId == R.id.directions_query_history_context_add_favorite) {
             queryHistoryListAdapter.setIsFavorite(adapterPosition, true);
             return true;
-        }
-        if (menuItemId == R.id.directions_query_history_context_remove_favorite) {
+        } else if (menuItemId == R.id.directions_query_history_context_remove_favorite) {
             queryHistoryListAdapter.setIsFavorite(adapterPosition, false);
             return true;
-        }
-        if (menuItemId == R.id.directions_query_history_location_context_details && menuItemLocation != null) {
+        } else if (menuItemId == R.id.directions_query_history_location_context_details && menuItemLocation != null) {
             StationDetailsActivity.start(this, network, menuItemLocation, null, null);
             return true;
-        }
-        if (menuItemId == R.id.directions_query_history_location_context_add_favorite
+        } else if (menuItemId == R.id.directions_query_history_location_context_add_favorite
                 && menuItemLocation != null) {
             FavoriteUtils.persist(getContentResolver(), FavoriteStationsProvider.TYPE_FAVORITE, network,
                     menuItemLocation);
@@ -1639,13 +1637,11 @@ public class DirectionsActivity extends OeffiMainActivity implements
                     menuItemLocation.uniqueShortName());
             queryHistoryListAdapter.notifyDataSetChanged();
             return true;
-        }
-        if (menuItemId == R.id.directions_query_history_location_context_launcher_shortcut
+        } else if (menuItemId == R.id.directions_query_history_location_context_launcher_shortcut
                 && menuItemLocation != null) {
             StationContextMenu.showLauncherShortcutDialog(DirectionsActivity.this, network, menuItemLocation);
             return true;
-        }
-        if (menuItemId == R.id.station_map_context_maps_internal && menuItemLocation != null) {
+        } else if (menuItemId == R.id.station_map_context_maps_internal && menuItemLocation != null) {
             setMapVisible(true);
             getMapView().zoomToStations(List.of(menuItemLocation), 0);
             return true;
@@ -1665,13 +1661,14 @@ public class DirectionsActivity extends OeffiMainActivity implements
             final Location from, final Location to, final Location via,
             final PTDate tripDepartureTime, final PTDate tripArrivalTime,
             final byte[] serializedTrip, final String tripId,
-            final byte[] serializedReloadRequest) {
+            final byte[] serializedReloadRequest,
+            final boolean tryReload) {
         final Trip trip = (Trip) Objects.deserialize(serializedTrip, true);
         if (trip == null) {
             new Toast(this).longToast(R.string.directions_query_history_invalid_blob);
             return;
         }
-        loadTripByTripRef(trip.tripRef, (loadedTrip) -> {
+        loadTripByTripRef(trip.tripRef, tryReload, (loadedTrip) -> {
             final Trip useTrip = loadedTrip != null ? loadedTrip : trip;
             final TripDetailsActivity.RenderConfig config = new TripDetailsActivity.RenderConfig();
             config.queryTripsRequestData = (QueryTripRunnable.TripRequestData) Objects.deserialize(serializedReloadRequest, true);
@@ -1680,8 +1677,11 @@ public class DirectionsActivity extends OeffiMainActivity implements
         });
     }
 
-    protected void loadTripByTripRef(final TripRef tripRef, final Consumer<Trip> tripHandler) {
-        if (tripRef == null) {
+    protected void loadTripByTripRef(
+            final TripRef tripRef,
+            final boolean tryReload,
+            final Consumer<Trip> tripHandler) {
+        if (!tryReload || tripRef == null) {
             tripHandler.accept(null);
             return;
         }
@@ -1690,7 +1690,7 @@ public class DirectionsActivity extends OeffiMainActivity implements
             tripHandler.accept(null);
             return;
         }
-        queryTripRunnable = new MyQueryTripsRunnable(networkProvider, tripRef) {
+        queryTripRunnable = new MyQueryTripRunnable(networkProvider, tripRef) {
             @Override
             protected void onResultOk(final QueryTripsResult result, final TripRequestData reloadRequestData) {
                 final List<Trip> trips = result.trips;
@@ -1703,7 +1703,7 @@ public class DirectionsActivity extends OeffiMainActivity implements
                 tripHandler.accept(null);
             }
         };
-        backgroundHandler.post(queryTripRunnable);
+        queryTripRunnable.post();
     }
 
     private void loadTripByTripShare(final TripShare tripShare, final Consumer<Trip> tripHandler) {
@@ -1716,7 +1716,7 @@ public class DirectionsActivity extends OeffiMainActivity implements
             tripHandler.accept(null);
             return;
         }
-        queryTripRunnable = new MyQueryTripsRunnable(networkProvider, tripShare) {
+        queryTripRunnable = new MyQueryTripRunnable(networkProvider, tripShare) {
             @Override
             protected void onResultOk(final QueryTripsResult result, final TripRequestData reloadRequestData) {
                 final List<Trip> trips = result.trips;
@@ -1729,7 +1729,7 @@ public class DirectionsActivity extends OeffiMainActivity implements
                 tripHandler.accept(null);
             }
         };
-        backgroundHandler.post(queryTripRunnable);
+        queryTripRunnable.post();
     }
 
     private boolean saneLocation(final @Nullable Location location, final boolean allowIncompleteAddress) {
@@ -1851,8 +1851,8 @@ public class DirectionsActivity extends OeffiMainActivity implements
         }
     }
 
-    public abstract class MyQueryTripsRunnable extends QueryTripRunnable {
-        public MyQueryTripsRunnable(
+    public abstract class MyQueryTripRunnable extends QueryTripRunnable {
+        public MyQueryTripRunnable(
                 final NetworkProvider networkProvider,
                 final TripRef tripRef) {
             super(DirectionsActivity.this,
@@ -1860,7 +1860,7 @@ public class DirectionsActivity extends OeffiMainActivity implements
                     networkProvider, tripRef);
         }
 
-        public MyQueryTripsRunnable(
+        public MyQueryTripRunnable(
                 final NetworkProvider networkProvider,
                 final TripShare tripShare) {
             super(DirectionsActivity.this,
@@ -1902,7 +1902,8 @@ public class DirectionsActivity extends OeffiMainActivity implements
             } else if (result.status == QueryTripsResult.Status.INVALID_DATE) {
                 new Toast(DirectionsActivity.this).longToast(R.string.directions_message_invalid_date);
             } else if (result.status == QueryTripsResult.Status.SERVICE_DOWN) {
-                networkProblem();
+                networkProblem(result, reloadRequestData);
+                return;
             } else if (result.status == QueryTripsResult.Status.AMBIGUOUS) {
                 final List<Location> autocompletes = result.ambiguousFrom != null ? result.ambiguousFrom
                         : (result.ambiguousVia != null ? result.ambiguousVia : result.ambiguousTo);
@@ -1939,7 +1940,7 @@ public class DirectionsActivity extends OeffiMainActivity implements
         protected void onBlocked(final HttpUrl url) {
             DialogBuilder.warn(DirectionsActivity.this, R.string.directions_alert_blocked_title)
                 .setMessage(getString(R.string.directions_alert_blocked_message, url.host()))
-                .setPositiveButton(R.string.directions_alert_blocked_button_retry, (dialog, which) -> viewGo.performClick())
+                .setPositiveButton(R.string.directions_alert_blocked_button_retry, (dialog, which) -> post())
                 .setNegativeButton(R.string.directions_alert_blocked_button_dismiss, null)
                 .show();
         }
@@ -1948,7 +1949,7 @@ public class DirectionsActivity extends OeffiMainActivity implements
         protected void onInternalError(final HttpUrl url) {
             DialogBuilder.warn(DirectionsActivity.this, R.string.directions_alert_internal_error_title)
                 .setMessage(getString(R.string.directions_alert_internal_error_message, url.host()))
-                .setPositiveButton(R.string.directions_alert_internal_error_button_retry, (dialog, which) -> viewGo.performClick())
+                .setPositiveButton(R.string.directions_alert_internal_error_button_retry, (dialog, which) -> post())
                 .setNegativeButton(R.string.directions_alert_internal_error_button_dismiss, null)
                 .show();
         }
@@ -1961,15 +1962,16 @@ public class DirectionsActivity extends OeffiMainActivity implements
                 .show();
         }
 
-        private void networkProblem() {
+        private void networkProblem(final QueryTripsResult result, final TripRequestData reloadRequestData) {
             DialogBuilder.warn(DirectionsActivity.this, R.string.alert_network_problem_title)
                 .setMessage(R.string.alert_network_problem_message)
-                .setPositiveButton(R.string.alert_network_problem_retry, (dialog, which) -> {
-                    dialog.dismiss();
-                    viewGo.performClick();
-                })
-                .setOnCancelListener(dialog -> dialog.dismiss())
+                .setPositiveButton(R.string.alert_network_problem_retry, (dialog, which) -> post())
+                .setNegativeButton(R.string.directions_alert_internal_error_button_dismiss, (dialog, which) -> onResultFailed(result, reloadRequestData))
                 .show();
+        }
+
+        public void post() {
+            backgroundHandler.post(this);
         }
     }
 }

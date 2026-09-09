@@ -151,7 +151,8 @@ public class QueryHistoryViewHolder extends RecyclerView.ViewHolder
                                 from, to, via,
                                 new PTDate(savedTripDepartureTime, PTDate.NETWORK_OFFSET), null,
                                 serializedSavedTrip, null,
-                                null);
+                                null,
+                                true);
                 });
             } else {
                 tripView.setVisibility(View.GONE);

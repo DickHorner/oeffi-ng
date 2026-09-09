@@ -368,7 +368,8 @@
     <string name="directions_stored_trip_over_or_done">&#x2714;</string>
 
     <!-- query history context menu -->
-    <string name="directions_query_history_context_show_trip">Show saved trip</string>
+    <string name="directions_query_history_context_show_trip">Show saved trip (try update)</string>
+    <string name="directions_query_history_context_show_trip_original">Show saved trip (no update)</string>
     <string name="directions_query_history_context_remove_trip">Forget saved trip</string>
     <string name="directions_query_history_context_remove_entry">Remove connection query</string>
     <string name="directions_query_history_context_add_favorite">Mark query as favorite</string>
@@ -376,7 +377,8 @@
 
     <!-- query stored trip context menu -->
     <string name="directions_query_stored_trip_context_search">Search alternative connections</string>
-    <string name="directions_query_stored_trip_context_show">Show</string>
+    <string name="directions_query_stored_trip_context_show">Show (try update)</string>
+    <string name="directions_query_stored_trip_context_show_original">Show (no update)</string>
     <string name="directions_query_stored_trip_context_navigate">Navigate</string>
     <string name="directions_query_stored_trip_context_remove">Delete</string>
     <string name="directions_query_stored_trip_context_set_done">Mark as done</string>

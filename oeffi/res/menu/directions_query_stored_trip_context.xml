@@ -9,6 +9,9 @@
         android:id="@+id/directions_query_stored_trip_context_show"
         android:title="@string/directions_query_stored_trip_context_show" />
     <item
+        android:id="@+id/directions_query_stored_trip_context_show_original"
+        android:title="@string/directions_query_stored_trip_context_show_original" />
+    <item
         android:id="@+id/directions_query_stored_trip_context_navigate"
         android:title="@string/directions_query_stored_trip_context_navigate" />
     <item
