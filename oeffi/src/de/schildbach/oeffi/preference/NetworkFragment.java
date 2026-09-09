@@ -18,7 +18,9 @@
 package de.schildbach.oeffi.preference;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
 import android.widget.EditText;
@@ -72,6 +74,10 @@ public class NetworkFragment extends PreferenceFragment {
                     })
                     .setNegativeButton(android.R.string.cancel, (dialog, which) -> {
                         dialog.cancel();
+                    })
+                    .setNeutralButton(R.string.help, (dialog, which) -> {
+                        context.startActivity(new Intent(Intent.ACTION_VIEW,
+                                Uri.parse(getString(R.string.network_preferences_credentials_help_url))));
                     })
                     .setCancelable(true)
                     .show();

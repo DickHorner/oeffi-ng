@@ -6,6 +6,7 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="find_hint">Find …</string>
+    <string name="help">Help</string>
 
     <string name="stations_icon_label">Öffi Stations</string>
     <string name="favorite_stations_icon_label">Öffi Favorites</string>
@@ -74,6 +75,7 @@
     <string name="network_preferences_credentials_summary">Provide credentials if required by the provider, e.g. an API token</string>
     <string name="network_preferences_credentials_edit_title">Enter Credentials …</string>
     <string name="network_preferences_credentials_edit_hint">… for %1$s</string>
+    <string name="network_preferences_credentials_help_url" translatable="false">https://github.com/santawho/oeffi-ng/wiki/Credentials</string>
 
     <!-- preferences shortcuts -->
     <string name="shortcuts_preferences_title">Homescreen Shortcuts</string>
