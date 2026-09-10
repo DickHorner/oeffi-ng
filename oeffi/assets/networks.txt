@@ -47,7 +47,6 @@ SVV|de-AT|Salzburg|disabled
 VMOBIL|de-AT|Vorarlberg;Bregenz|disabled
 
 # CH
-VBL|de-CH|Luzern
 ZVV|de-CH|Zürich
 
 # LU

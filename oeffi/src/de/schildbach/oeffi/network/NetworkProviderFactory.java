@@ -53,7 +53,6 @@ import de.schildbach.pte.StvProvider;
 import de.schildbach.pte.SydneyProvider;
 import de.schildbach.pte.TlemProvider;
 import de.schildbach.pte.VbbProvider;
-import de.schildbach.pte.VblProvider;
 import de.schildbach.pte.VbnProvider;
 import de.schildbach.pte.VgnProvider;
 import de.schildbach.pte.VgsProvider;
@@ -163,8 +162,6 @@ public final class NetworkProviderFactory {
             return new LinzProvider();
         else if (networkId.equals(NetworkId.STV))
             return new StvProvider("{\"type\":\"AID\",\"aid\":\"wf7mcf9bv3nv8g5f\"}");
-        else if (networkId.equals(NetworkId.VBL))
-            return new VblProvider();
         else if (networkId.equals(NetworkId.ZVV))
             return new ZvvProvider("{\"type\":\"AID\",\"aid\":\"hf7mcf9bv3nv8g5f\"}");
         else if (networkId.equals(NetworkId.LU))

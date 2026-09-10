@@ -139,6 +139,12 @@ public class Application extends android.app.Application {
         migrateSelectedNetwork(RTACHICAGO, NetworkId.BART);
         FavoriteStationsProvider.deleteFavoriteStations(this, RTACHICAGO);
         QueryHistoryProvider.deleteQueryHistory(this, RTACHICAGO);
+
+        // 2026-09-10: migrate Luzern to use RT
+        final String VBL = "VBL";
+        migrateSelectedNetwork(VBL, NetworkId.RT);
+        FavoriteStationsProvider.deleteFavoriteStations(this, VBL);
+        QueryHistoryProvider.deleteQueryHistory(this, VBL);
     }
 
     private void initLogging() {
