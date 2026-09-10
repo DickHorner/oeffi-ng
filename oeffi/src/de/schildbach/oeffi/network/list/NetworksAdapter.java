@@ -21,6 +21,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.recyclerview.widget.RecyclerView;
+
+import de.schildbach.oeffi.Application;
 import de.schildbach.oeffi.R;
 import de.schildbach.pte.NetworkId;
 
@@ -35,6 +37,7 @@ public class NetworksAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private final NetworkContextMenuItemListener contextMenuItemListener;
 
     private final List<NetworkListEntry> entries = new LinkedList<>();
+    private final NetworkId.State unselectableState;
 
     public NetworksAdapter(final Context context, final NetworkId previouslySelectedNetwork,
             final NetworkClickListener clickListener, final NetworkContextMenuItemListener contextMenuItemListener) {
@@ -43,6 +46,9 @@ public class NetworksAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         this.previouslySelectedNetwork = previouslySelectedNetwork;
         this.clickListener = clickListener;
         this.contextMenuItemListener = contextMenuItemListener;
+
+        unselectableState = Application.getInstance().isDeveloperElementsEnabled()
+                ? NetworkId.State.unselectable : NetworkId.State.workInProgress;
 
         setHasStableIds(true);
     }
@@ -85,7 +91,7 @@ public class NetworksAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             ((SeparatorViewHolder) holder).bind((NetworkListEntry.Separator) entries.get(position));
         } else {
             final NetworkListEntry.Network entry = (NetworkListEntry.Network) entries.get(position);
-            if (entry.state.lessThan(NetworkId.State.unselectable)) {
+            if (entry.state.lessThan(unselectableState)) {
                 ((NetworkViewHolder) holder).bind(entry, true, 0, clickListener, contextMenuItemListener);
             } else {
                 ((NetworkViewHolder) holder).bind(entry, false, 0, null, null);

@@ -9,5 +9,8 @@
     <item
         android:id="@+id/network_picker_context_toggle_favorite"
         android:title="@string/network_picker_context_toggle_favorite_title" />
+    <item
+        android:id="@+id/network_picker_context_credentials"
+        android:title="@string/network_picker_context_credentials_title" />
 
 </menu>

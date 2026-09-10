@@ -173,7 +173,7 @@
     <string name="network_picker_entry_state_beta">beta</string>
     <string name="network_picker_entry_state_dead">DEAD SERVER?</string>
     <string name="network_picker_entry_state_deprecated">deprecated</string>
-    <string name="network_picker_entry_state_wip">under development</string>
+    <string name="network_picker_entry_state_workInProgress">under development</string>
     <string name="network_picker_separator_last">Last used</string>
     <string name="network_picker_separator_suggested">Suggested</string>
     <string name="network_picker_separator_nearby">Nearby</string>
@@ -181,6 +181,7 @@
     <string name="network_picker_separator_world">World</string>
     <string name="network_picker_context_remove_title">Remove Data</string>
     <string name="network_picker_context_toggle_favorite_title">Toggle favorite</string>
+    <string name="network_picker_context_credentials_title">Supply credentials</string>
 
     <!-- toasts -->
     <string name="toast_add_favorite">%s\nadded to favorites</string>

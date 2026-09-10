@@ -18,22 +18,17 @@
 package de.schildbach.oeffi.preference;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.net.Uri;
 import android.os.Bundle;
-import android.text.InputType;
-import android.widget.EditText;
 
 import androidx.annotation.Nullable;
 
 import de.schildbach.oeffi.Application;
 import de.schildbach.oeffi.Constants;
 import de.schildbach.oeffi.R;
+import de.schildbach.oeffi.network.NetworkCredentialsDialog;
 import de.schildbach.oeffi.network.NetworkPickerActivity;
 import de.schildbach.oeffi.network.NetworkProviderFactory;
 import de.schildbach.oeffi.network.NetworkResources;
-import de.schildbach.oeffi.util.DialogBuilder;
 import de.schildbach.pte.NetworkId;
 import de.schildbach.pte.provider.NetworkProvider;
 
@@ -53,35 +48,8 @@ public class NetworkFragment extends PreferenceFragment {
         setupCustomPreference(Constants.PREFS_KEY_NETWORK_PROVIDER, preference -> {
             NetworkPickerActivity.start(context, false);
         });
-        setupCustomPreference(PREF_KEY_NETWORK_CREDENTIALS, preference -> {
-            final EditText editText = new EditText(context);
-            editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-            editText.setMinLines(3);
-            editText.setBackgroundColor(context.getColor(R.color.bg_selected));
-            final Resources resources = context.getResources();
-            final int hPad = resources.getDimensionPixelSize(R.dimen.text_padding_horizontal_lax);
-            final int vPad = resources.getDimensionPixelSize(R.dimen.text_padding_vertical_verylax);
-            editText.setPadding(hPad, vPad, hPad, vPad);
-            editText.setHint(getString(R.string.network_preferences_credentials_edit_hint,
-                    getNetworkLabel(application.prefsGetNetworkId(false))));
-            DialogBuilder.get(context)
-                    .setView(editText)
-                    .setTitle(R.string.network_preferences_credentials_edit_title)
-                    .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                        final String text = editText.getText().toString();
-                        NetworkProviderFactory.getInstance()
-                                .setNetworkCredentials(application.prefsGetNetworkId(false), text);
-                    })
-                    .setNegativeButton(android.R.string.cancel, (dialog, which) -> {
-                        dialog.cancel();
-                    })
-                    .setNeutralButton(R.string.help, (dialog, which) -> {
-                        context.startActivity(new Intent(Intent.ACTION_VIEW,
-                                Uri.parse(getString(R.string.network_preferences_credentials_help_url))));
-                    })
-                    .setCancelable(true)
-                    .show();
-        });
+        setupCustomPreference(PREF_KEY_NETWORK_CREDENTIALS, preference ->
+                NetworkCredentialsDialog.show(getContext(), application.prefsGetNetworkId(false)));
         setupDynamicSummary(
                 Constants.PREFS_KEY_NETWORK_PROVIDER, R.string.network_preferences_provider_summary,
                 networkIdName -> (networkIdName == null) ? "-"

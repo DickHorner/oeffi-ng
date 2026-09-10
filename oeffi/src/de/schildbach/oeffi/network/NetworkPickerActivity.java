@@ -28,11 +28,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Process;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.EditText;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
@@ -62,8 +59,6 @@ import de.schildbach.oeffi.util.LocationUtils;
 import de.schildbach.pte.NetworkId;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Point;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -370,8 +365,8 @@ public class NetworkPickerActivity extends OeffiActivity implements
     }
 
     public boolean onNetworkContextMenuItemClick(final NetworkListEntry.Network entry, final int menuItemId) {
+        final NetworkId networkId = entry.id;
         if (menuItemId == R.id.network_picker_context_toggle_favorite) {
-            final NetworkId networkId = entry.id;
             if (favoriteNetworks.contains(networkId)) {
                 entry.isFavorite = false;
                 favoriteNetworks.removeNetwork(networkId);
@@ -381,6 +376,8 @@ public class NetworkPickerActivity extends OeffiActivity implements
             }
             listAdapter.notifyDataSetChanged();
             return true;
+        } else if (menuItemId == R.id.network_picker_context_credentials) {
+            NetworkCredentialsDialog.show(this, networkId);
         } else if (menuItemId == R.id.network_picker_context_remove) {
                 // placeholder for action
                 listAdapter.notifyDataSetChanged();
@@ -443,7 +440,7 @@ public class NetworkPickerActivity extends OeffiActivity implements
                     log.warn("networks file {} contains entry for non-existing provider \"{}\"", INDEX_FILENAME, networkName);
                     continue;
                 }
-                final NetworkListEntry entry = new NetworkListEntry.Network(networkId, NetworkId.State.valueOf(state), group, coverage);
+                final NetworkListEntry entry = new NetworkListEntry.Network(networkId, NetworkId.State.valueOf(state), false, group, coverage);
 
                 entriesMap.put(networkName, entry);
             }
@@ -459,6 +456,7 @@ public class NetworkPickerActivity extends OeffiActivity implements
             final NetworkListEntry entry = new NetworkListEntry.Network(
                     networkId,
                     descriptor.getState(),
+                    descriptor.isCredentialsRequired(),
                     descriptor.getGroup(),
                     descriptor.getCoverage());
             entriesMap.put(networkId.name(), entry);
@@ -474,9 +472,11 @@ public class NetworkPickerActivity extends OeffiActivity implements
 
         // last used networks
         boolean firstLastUsed = true;
+        final NetworkId.State unselectableState = application.isDeveloperElementsEnabled()
+                ? NetworkId.State.unselectable : NetworkId.State.workInProgress;
         for (final NetworkId lastNetwork : lastNetworks) {
             final NetworkListEntry.Network networkEntry = (NetworkListEntry.Network) entriesMap.get(lastNetwork.name());
-            if (networkEntry != null && networkEntry.state.lessThan(NetworkId.State.unselectable) && matchesFilter(networkEntry)) {
+            if (networkEntry != null && networkEntry.state.lessThan(unselectableState) && matchesFilter(networkEntry)) {
                 if (firstLastUsed) {
                     entries.add(new NetworkListEntry.Separator(getString(R.string.network_picker_separator_last)));
                     firstLastUsed = false;
@@ -491,7 +491,7 @@ public class NetworkPickerActivity extends OeffiActivity implements
         // favorite networks
         for (final NetworkId networkId : favoriteNetworks) {
             final NetworkListEntry.Network networkEntry = (NetworkListEntry.Network) entriesMap.get(networkId.name());
-            if (networkEntry != null && networkEntry.state.lessThan(NetworkId.State.unselectable) && matchesFilter(networkEntry)) {
+            if (networkEntry != null && networkEntry.state.lessThan(unselectableState) && matchesFilter(networkEntry)) {
                 if (firstLastUsed) {
                     entries.add(new NetworkListEntry.Separator(getString(R.string.network_picker_separator_last)));
                     firstLastUsed = false;

@@ -23,13 +23,15 @@ public interface NetworkListEntry {
     class Network implements NetworkListEntry {
         public final NetworkId id;
         public final NetworkId.State state;
+        public final boolean credentialsRequired;
         public final String group;
         public final String coverage;
         public boolean isFavorite;
 
-        public Network(final NetworkId id, final NetworkId.State state, final String group, final String coverage) {
+        public Network(final NetworkId id, final NetworkId.State state, final boolean credentialsRequired, final String group, final String coverage) {
             this.id = id;
             this.state = state;
+            this.credentialsRequired = credentialsRequired;
             this.group = group;
             this.coverage = coverage;
         }

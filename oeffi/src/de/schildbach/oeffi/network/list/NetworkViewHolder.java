@@ -89,7 +89,7 @@ public class NetworkViewHolder extends RecyclerView.ViewHolder {
         labelView.setText(networkRes.label);
         labelView.setTextColor(isEnabled ? colorSignificant : colorLessSignificant);
 
-        if (isEnabled && entry.state != null && entry.state != NetworkId.State.active) {
+        if (entry.state != null && entry.state != NetworkId.State.active) {
             final int resIdentifier = res.getIdentifier("network_picker_entry_state_" + entry.state, "string", context.getPackageName());
             if (resIdentifier == 0) {
                 stateView.setText(entry.state.name());
@@ -122,6 +122,8 @@ public class NetworkViewHolder extends RecyclerView.ViewHolder {
             contextButton.setOnClickListener(v -> {
                 final PopupMenu contextMenu = new PopupMenu(context, v);
                 contextMenu.inflate(R.menu.network_picker_context);
+                contextMenu.getMenu().findItem(R.id.network_picker_context_credentials)
+                        .setEnabled(entry.credentialsRequired);
                 contextMenu.setOnMenuItemClickListener(item ->
                         contextMenuItemListener.onNetworkContextMenuItemClick(entry, item.getItemId()));
                 contextMenu.show();
