@@ -10,7 +10,6 @@
 
     <!-- This is the hall of shame: public transport authorities which still do not support HTTPS. -->
     <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="false">wojhati.rta.ae</domain><!-- RTA Dubai -->
         <domain includeSubdomains="false">railteam.hafas.eu</domain><!-- Railteam -->
     </domain-config>
 
