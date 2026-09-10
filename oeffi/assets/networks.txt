@@ -75,5 +75,4 @@ DUB|ae-AE|AE;Dubai|beta
 BART|us-US|US;California;Kalifornien;San Francisco|beta
 
 # AU
-SYDNEY|en-AU|AU;New South Wales;Sydney
 MET|en-AU|AU;Victoria;Melbourne|disabled

@@ -50,7 +50,6 @@ import de.schildbach.pte.RtProvider;
 import de.schildbach.pte.SeProvider;
 import de.schildbach.pte.ShProvider;
 import de.schildbach.pte.StvProvider;
-import de.schildbach.pte.SydneyProvider;
 import de.schildbach.pte.TlemProvider;
 import de.schildbach.pte.VbbProvider;
 import de.schildbach.pte.VbnProvider;
@@ -182,8 +181,6 @@ public final class NetworkProviderFactory {
             return new DubProvider();
         else if (networkId.equals(NetworkId.BART))
             return new BartProvider("{\"type\":\"AID\",\"aid\":\"kEwHkFUCIL500dym\"}");
-        else if (networkId.equals(NetworkId.SYDNEY))
-            return new SydneyProvider();
         else
             throw new IllegalArgumentException(networkId.name());
     }
