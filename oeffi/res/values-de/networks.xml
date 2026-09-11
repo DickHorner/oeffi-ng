@@ -130,12 +130,16 @@
 <!--    <string name="network_vmobil_comment">Nicht verfügbar, weil der VVV ausdrücklich darum gebeten hat, nicht in Öffi enthalten zu sein. Du kannst stattdessen die ÖBB verwenden, das funktioniert für Vorarlberg auch gut.</string>-->
     <string name="network_swissotd_label">Swiss Open Transport Data</string>
     <string name="network_swissotd_comment">Fern-, Regional- und Lokalverkehr (TG:OTD)</string>
+    <string name="network_oevinfoch_label">ÖV-Info</string>
+    <string name="network_oevinfoch_comment">Fern-, Regional- und Lokalverkehr (TG:OTD)</string>
     <string name="network_vbl_label">Luzern</string>
     <string name="network_vbl_comment">nur Tram und Bus (TG:VBL)</string>
     <string name="network_zvv_label">Zürich</string>
     <string name="network_zvv_comment">Lokal- und Regionalverkehr (TG:ZVV)</string>
     <string name="network_bls_label">Bern</string>
     <string name="network_bls_comment">Lokal- und Regionalverkehr (TG:BLS)</string>
+    <string name="network_blsojp_label">Bern</string>
+    <string name="network_blsojp_comment">Lokal- und Regionalverkehr (TG:BLS)</string>
     <string name="network_tpg_label">Genf</string>
     <string name="network_tpg_comment">Lokal- und Regionalverkehr (TG:TPG)</string>
     <string name="network_lu_label">Luxemburg</string>

@@ -32,6 +32,7 @@ import de.schildbach.pte.provider.hafas.PlProvider;
 import de.schildbach.pte.provider.hafas.SbmMvvProvider;
 import de.schildbach.pte.Standard;
 import de.schildbach.pte.provider.efa.VgnProvider;
+import de.schildbach.pte.provider.openjourneyplanner.OevInfoChProvider;
 import de.schildbach.pte.provider.other.VrsProvider;
 import de.schildbach.pte.provider.efa.VvoProvider;
 import okhttp3.HttpUrl;
@@ -145,5 +146,6 @@ public final class NetworkProviderFactory extends de.schildbach.pte.NetworkProvi
 //        addConfigurator(SvvProvider.class, NetworkId.State.unselectable);
 //        addConfigurator(VmobilProvider.class, NetworkId.State.unselectable);
 //        addConfigurator(StvProvider.class, () -> new StvProvider("{\"type\":\"AID\",\"aid\":\"wf7mcf9bv3nv8g5f\"}"));
+        addConfigurator(OevInfoChProvider.class, () -> new OevInfoChProvider("57c5dbbbf1fe4d0001000018c209104792c9410085996119a92a0258"));
     }
 }
