@@ -63,7 +63,6 @@ SVV|de-AT|Salzburg|disabled
 VMOBIL|de-AT|Vorarlberg;Bregenz|disabled
 
 # CH
-VBL|de-CH|Luzern
 ZVV|de-CH|Zürich
 
 # LU
@@ -92,5 +91,4 @@ DUB|ae-AE|AE;Dubai|beta
 BART|us-US|US;California;Kalifornien;San Francisco|beta
 
 # AU
-SYDNEY|en-AU|AU;New South Wales;Sydney
 MET|en-AU|AU;Victoria;Melbourne|disabled

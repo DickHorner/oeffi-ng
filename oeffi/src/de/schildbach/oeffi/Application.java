@@ -454,6 +454,18 @@ public class Application extends android.app.Application {
         migrateSelectedNetwork(RTACHICAGO, NetworkId.BART);
         FavoriteStationsProvider.deleteFavoriteStations(this, RTACHICAGO);
         QueryHistoryProvider.deleteQueryHistory(this, RTACHICAGO);
+
+        // 2026-09-10: migrate Luzern to use RT
+        final String VBL = "VBL";
+        migrateSelectedNetwork(VBL, NetworkId.RT);
+        FavoriteStationsProvider.deleteFavoriteStations(this, VBL);
+        QueryHistoryProvider.deleteQueryHistory(this, VBL);
+
+        // 2026-09-10: migrate Sydney to use RT
+        final String SYDNEY = "SYDNEY";
+        migrateSelectedNetwork(SYDNEY, NetworkId.RT);
+        FavoriteStationsProvider.deleteFavoriteStations(this, SYDNEY);
+        QueryHistoryProvider.deleteQueryHistory(this, SYDNEY);
     }
 
     public String getAppName() {
