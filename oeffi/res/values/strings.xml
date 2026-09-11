@@ -156,6 +156,7 @@
 
     <!-- preferences extras -->
     <string name="extras_title">Special Functions</string>
+    <string name="special_providers_enabled_title">Enable more networks</string>
 
     <string name="preference_changes_require_restart_title">Restart?</string>
     <string name="preference_changes_require_restart_message">
@@ -174,6 +175,7 @@
     <string name="network_picker_entry_state_dead">DEAD SERVER?</string>
     <string name="network_picker_entry_state_deprecated">deprecated</string>
     <string name="network_picker_entry_state_workInProgress">under development</string>
+    <string name="network_picker_entry_credentials_required">credentials required</string>
     <string name="network_picker_separator_last">Last used</string>
     <string name="network_picker_separator_suggested">Suggested</string>
     <string name="network_picker_separator_nearby">Nearby</string>

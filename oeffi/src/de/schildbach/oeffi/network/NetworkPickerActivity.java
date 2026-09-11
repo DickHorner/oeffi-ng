@@ -472,11 +472,10 @@ public class NetworkPickerActivity extends OeffiActivity implements
 
         // last used networks
         boolean firstLastUsed = true;
-        final NetworkId.State unselectableState = application.isDeveloperElementsEnabled()
-                ? NetworkId.State.unselectable : NetworkId.State.workInProgress;
+        final NetworkId.State limitSelectableState = NetworkProviderFactory.getLimitSelectableState();
         for (final NetworkId lastNetwork : lastNetworks) {
             final NetworkListEntry.Network networkEntry = (NetworkListEntry.Network) entriesMap.get(lastNetwork.name());
-            if (networkEntry != null && networkEntry.state.lessThan(unselectableState) && matchesFilter(networkEntry)) {
+            if (networkEntry != null && networkEntry.state.lessThan(limitSelectableState) && matchesFilter(networkEntry)) {
                 if (firstLastUsed) {
                     entries.add(new NetworkListEntry.Separator(getString(R.string.network_picker_separator_last)));
                     firstLastUsed = false;
@@ -491,7 +490,7 @@ public class NetworkPickerActivity extends OeffiActivity implements
         // favorite networks
         for (final NetworkId networkId : favoriteNetworks) {
             final NetworkListEntry.Network networkEntry = (NetworkListEntry.Network) entriesMap.get(networkId.name());
-            if (networkEntry != null && networkEntry.state.lessThan(unselectableState) && matchesFilter(networkEntry)) {
+            if (networkEntry != null && networkEntry.state.lessThan(limitSelectableState) && matchesFilter(networkEntry)) {
                 if (firstLastUsed) {
                     entries.add(new NetworkListEntry.Separator(getString(R.string.network_picker_separator_last)));
                     firstLastUsed = false;
@@ -507,7 +506,7 @@ public class NetworkPickerActivity extends OeffiActivity implements
         boolean firstSuggested = true;
         for (final Iterator<NetworkListEntry> i = entriesMap.values().iterator(); i.hasNext();) {
             final NetworkListEntry.Network networkEntry = (NetworkListEntry.Network) i.next();
-            if (isSuggested(networkEntry) && matchesFilter(networkEntry)) {
+            if (isSuggested(networkEntry) && networkEntry.state.lessThan(limitSelectableState) && matchesFilter(networkEntry)) {
                 if (firstSuggested) {
                     entries.add(new NetworkListEntry.Separator(getString(R.string.network_picker_separator_suggested)));
                     firstSuggested = false;
@@ -520,16 +519,16 @@ public class NetworkPickerActivity extends OeffiActivity implements
 
         // nearby networks
         boolean firstNearby = true;
-        for (Iterator<NetworkListEntry> i = entriesMap.values().iterator(); i.hasNext();) {
-            final NetworkListEntry.Network networkEntry = (NetworkListEntry.Network) i.next();
-            if (isNearby(networkEntry) && matchesFilter(networkEntry)) {
+        for (final Iterator<NetworkListEntry> it = entriesMap.values().iterator(); it.hasNext();) {
+            final NetworkListEntry.Network networkEntry = (NetworkListEntry.Network) it.next();
+            if (isNearby(networkEntry) && networkEntry.state.lessThan(limitSelectableState) && matchesFilter(networkEntry)) {
                 if (firstNearby) {
                     entries.add(new NetworkListEntry.Separator(getString(R.string.network_picker_separator_nearby)));
                     firstNearby = false;
                 }
 
                 entries.add(networkEntry);
-                i.remove();
+                it.remove();
             }
         }
 
@@ -539,6 +538,8 @@ public class NetworkPickerActivity extends OeffiActivity implements
         String groupTitle = null;
         for (final NetworkListEntry entry : entriesMap.values()) {
             final NetworkListEntry.Network networkEntry = (NetworkListEntry.Network) entry;
+            if (!networkEntry.state.lessThan(limitSelectableState))
+                continue;
             final String group = networkEntry.group;
             if (!group.equals(lastGroup)) {
                 if (NetworkId.Descriptor.GROUP_WORLD.equals(group)) {

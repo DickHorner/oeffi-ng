@@ -43,6 +43,7 @@ public class NetworkViewHolder extends RecyclerView.ViewHolder {
     private final TextView labelView;
     private final TextView stateView;
     private final TextView commentView;
+    private final View credentialsRequiredView;
     private final TextView usageView;
     private final ImageButton contextButton;
     private final View contextButtonSpace;
@@ -61,6 +62,7 @@ public class NetworkViewHolder extends RecyclerView.ViewHolder {
         labelView = itemView.findViewById(R.id.network_picker_entry_label);
         stateView = itemView.findViewById(R.id.network_picker_entry_state);
         commentView = itemView.findViewById(R.id.network_picker_entry_comment);
+        credentialsRequiredView = itemView.findViewById(R.id.network_picker_entry_credentials_required);
         usageView = itemView.findViewById(R.id.network_picker_entry_usage);
         contextButton = itemView.findViewById(R.id.network_picker_entry_context_button);
         contextButtonSpace = itemView.findViewById(R.id.network_picker_entry_context_button_space);
@@ -102,6 +104,8 @@ public class NetworkViewHolder extends RecyclerView.ViewHolder {
 
         commentView.setText(Html.fromHtml(networkRes.comment, Html.FROM_HTML_MODE_COMPACT));
         commentView.setTextColor(isEnabled ? colorSignificant : colorLessSignificant);
+
+        ViewUtils.setVisibility(credentialsRequiredView, entry.credentialsRequired);
 
         if (dbFileLength > 0) {
             usageView.setVisibility(View.VISIBLE);

@@ -52,6 +52,15 @@ public final class NetworkProviderFactory extends de.schildbach.pte.NetworkProvi
         return instance.getNetworkProvider(networkId);
     }
 
+    public static NetworkId.State getLimitSelectableState() {
+        final Application application = Application.getInstance();
+        if (application.getSharedPreferences().getBoolean(Constants.PREFS_KEY_SPECIAL_PROVIDERS_ENABLED, false))
+            return NetworkId.State.limit_selectable_all;
+        if (application.isDeveloperElementsEnabled())
+            return NetworkId.State.limit_selectable_dev;
+        return NetworkId.State.limit_selectable_regular;
+    }
+
     private final Map<NetworkId, NetworkProvider> providerCache = new HashMap<>();
 
     private void setupStandard() {

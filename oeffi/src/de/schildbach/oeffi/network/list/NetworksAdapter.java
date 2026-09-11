@@ -22,8 +22,8 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.recyclerview.widget.RecyclerView;
 
-import de.schildbach.oeffi.Application;
 import de.schildbach.oeffi.R;
+import de.schildbach.oeffi.network.NetworkProviderFactory;
 import de.schildbach.pte.NetworkId;
 
 import java.util.LinkedList;
@@ -37,7 +37,7 @@ public class NetworksAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private final NetworkContextMenuItemListener contextMenuItemListener;
 
     private final List<NetworkListEntry> entries = new LinkedList<>();
-    private final NetworkId.State unselectableState;
+    private final NetworkId.State limitSelectableState;
 
     public NetworksAdapter(final Context context, final NetworkId previouslySelectedNetwork,
             final NetworkClickListener clickListener, final NetworkContextMenuItemListener contextMenuItemListener) {
@@ -47,8 +47,7 @@ public class NetworksAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         this.clickListener = clickListener;
         this.contextMenuItemListener = contextMenuItemListener;
 
-        unselectableState = Application.getInstance().isDeveloperElementsEnabled()
-                ? NetworkId.State.unselectable : NetworkId.State.workInProgress;
+        limitSelectableState = NetworkProviderFactory.getLimitSelectableState();
 
         setHasStableIds(true);
     }
@@ -91,7 +90,7 @@ public class NetworksAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             ((SeparatorViewHolder) holder).bind((NetworkListEntry.Separator) entries.get(position));
         } else {
             final NetworkListEntry.Network entry = (NetworkListEntry.Network) entries.get(position);
-            if (entry.state.lessThan(unselectableState)) {
+            if (entry.state.lessThan(limitSelectableState)) {
                 ((NetworkViewHolder) holder).bind(entry, true, 0, clickListener, contextMenuItemListener);
             } else {
                 ((NetworkViewHolder) holder).bind(entry, false, 0, null, null);

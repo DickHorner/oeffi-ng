@@ -79,6 +79,7 @@ public class Constants {
     public static final String PREFS_KEY_LAST_INFO_AT = "last_hint_at";
     public static final String PREFS_KEY_USER_INTERFACE_DIRECTIONS_TRIPEXTRAINFO_ENABLED = "user_interface_directions_tripextrainfo_enabled";
     public static final String PREFS_KEY_EXTRAS_DRIVERMODE_ENABLED = "extras_drivermode_enabled";
+    public static final String PREFS_KEY_SPECIAL_PROVIDERS_ENABLED = "special_providers_enabled";
 
     public static final String CHAR_THIN_SPACE = "\u2009";
     public static final String CHAR_HAIR_SPACE = "\u200a";

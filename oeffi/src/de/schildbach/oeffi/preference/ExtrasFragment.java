@@ -20,6 +20,7 @@ package de.schildbach.oeffi.preference;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.preference.CheckBoxPreference;
 
 import de.schildbach.oeffi.Application;
@@ -51,16 +52,20 @@ public class ExtrasFragment extends PreferenceFragment {
     }
 
     @Override
-    public void onCreatePreferences(@androidx.annotation.Nullable final Bundle savedInstanceState, @androidx.annotation.Nullable final String rootKey) {
+    public void onCreatePreferences(@Nullable final Bundle savedInstanceState, @Nullable final String rootKey) {
         addPreferencesFromResource(R.xml.preference_extras);
 
         if (!isMoreExtrasEnabled())
             return;
 
-        // final CheckBoxPreference tripExtraInfoPreference = new CheckBoxPreference(preferenceActivity);
-        // tripExtraInfoPreference.setKey(Constants.KEY_EXTRAS_TRIPEXTRAINFO_ENABLED);
-        // tripExtraInfoPreference.setTitle(R.string.extras_tripextrainfo_enabled_title);
-        // tripExtraInfoPreference.setDefaultValue(false);
-        // addPreference(tripExtraInfoPreference);
+        addCheckBoxPreference(Constants.PREFS_KEY_SPECIAL_PROVIDERS_ENABLED, R.string.special_providers_enabled_title);
+    }
+
+    private void addCheckBoxPreference(final String prefKey, final int labelResId) {
+        final CheckBoxPreference tripExtraInfoPreference = new CheckBoxPreference(preferenceActivity);
+        tripExtraInfoPreference.setKey(prefKey);
+        tripExtraInfoPreference.setTitle(labelResId);
+        tripExtraInfoPreference.setDefaultValue(false);
+        addPreference(tripExtraInfoPreference);
     }
 }
