@@ -517,114 +517,116 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
                             Station newSelectedStation = null;
                             for (final StationDepartures stationDepartures : result.stationDepartures) {
                                 final Location location = stationDepartures.location;
-                                if (location.hasId()) {
-                                    Station station = null;
-                                    final String locationId = location.id;
-                                    for (final Station s : stations) {
-                                        if (locationId.equals(s.location.id)) {
-                                            station = s;
-                                            break;
-                                        }
+                                if (!location.hasId())
+                                    continue;
+                                Station station = null;
+                                final String locationId = location.id;
+                                for (final Station s : stations) {
+                                    if (locationId.equals(s.location.id)) {
+                                        station = s;
+                                        break;
                                     }
-                                    CombinedStation combinedStation = null;
-                                    if (station == null) {
-                                        station = new Station(selectedNetwork, location);
-                                        stations.add(station);
-                                        final String locationName = location.name;
-                                        final String locationPlace = location.place;
-                                        for (final CombinedStation cs : combinedStations) {
-                                            if (COMBINE_STATIONS_BY_IDENTICAL_NAME) {
-                                                if (locationName == null) {
-                                                    if (cs.name != null)
-                                                        continue;
-                                                } else {
-                                                    if (!locationName.equals(cs.name))
-                                                        continue;
-                                                }
-                                                if (locationPlace == null) {
-                                                    if (cs.place != null)
-                                                        continue;
-                                                } else {
-                                                    if (!locationPlace.equals(cs.place))
-                                                        continue;
-                                                }
+                                }
+                                CombinedStation combinedStation = null;
+                                if (station == null) {
+                                    station = new Station(selectedNetwork, location);
+                                    stations.add(station);
+                                    final String locationName = location.name;
+                                    final String locationPlace = location.place;
+                                    for (final CombinedStation cs : combinedStations) {
+                                        if (COMBINE_STATIONS_BY_IDENTICAL_NAME) {
+                                            if (locationName == null) {
+                                                if (cs.name != null)
+                                                    continue;
                                             } else {
-                                                if (locationId == null) {
-                                                    if (cs.id != null)
-                                                        continue;
-                                                } else {
-                                                    if (!locationId.equals(cs.id))
-                                                        continue;
-                                                }
+                                                if (!locationName.equals(cs.name))
+                                                    continue;
                                             }
+                                            if (locationPlace == null) {
+                                                if (cs.place != null)
+                                                    continue;
+                                            } else {
+                                                if (!locationPlace.equals(cs.place))
+                                                    continue;
+                                            }
+                                        } else {
+                                            if (locationId == null) {
+                                                if (cs.id != null)
+                                                    continue;
+                                            } else {
+                                                if (!locationId.equals(cs.id))
+                                                    continue;
+                                            }
+                                        }
+                                        combinedStation = cs;
+                                        break;
+                                    }
+                                    if (combinedStation == null) {
+                                        combinedStation = new CombinedStation();
+                                        combinedStation.id = locationId;
+                                        combinedStation.name = locationName;
+                                        combinedStation.place = locationPlace;
+                                        combinedStation.baseStation = station;
+                                        combinedStations.add(combinedStation);
+//                                    } else {
+                                        // why? changing the baseStation makes in unequal the selectedStation, and thereby not identifyable as the current one
+                                        // if (locationId != null && locationId.compareTo(combinedStation.id) < 0) {
+                                        //     combinedStation.id = locationId;
+                                        //     combinedStation.baseStation = station;
+                                        // }
+                                    }
+                                    combinedStation.stations.put(locationId, station);
+                                } else {
+                                    for (final CombinedStation cs : combinedStations) {
+                                        if (cs.stations.get(locationId) != null) {
                                             combinedStation = cs;
                                             break;
                                         }
-                                        if (combinedStation == null) {
-                                            combinedStation = new CombinedStation();
-                                            combinedStation.id = locationId;
-                                            combinedStation.name = locationName;
-                                            combinedStation.place = locationPlace;
-                                            combinedStation.baseStation = station;
-                                            combinedStations.add(combinedStation);
-                                        } else {
-                                            if (locationId != null && combinedStation.id.compareTo(locationId) < 0) {
-                                                combinedStation.id = locationId;
-                                                combinedStation.baseStation = station;
-                                            }
-                                        }
-                                        combinedStation.stations.put(locationId, station);
-                                    } else {
-                                        for (final CombinedStation cs : combinedStations) {
-                                            if (cs.stations.get(locationId) != null) {
-                                                combinedStation = cs;
-                                                break;
-                                            }
-                                        }
                                     }
+                                }
 
-                                    final List<Departure> departures = filterDeparturesByProducts(stationDepartures.departures, productFilter);
+                                final List<Departure> departures = filterDeparturesByProducts(stationDepartures.departures, productFilter);
 
-                                    if (modeAppend && station.getDepartures() != null) {
-                                        final Set<JourneyRef> oldJourneyRefs = station.getDepartures().stream().map(
-                                                departure -> departure.journeyRef).collect(Collectors.toSet());
-                                        for (final Departure departure : departures) {
-                                            if (!oldJourneyRefs.contains(departure.journeyRef))
-                                                station.getDepartures().add(departure);
-                                        }
-                                    } else {
-                                        station.setDepartures(departures);
+                                if (modeAppend && station.getDepartures() != null) {
+                                    final Set<JourneyRef> oldJourneyRefs = station.getDepartures().stream().map(
+                                            departure -> departure.journeyRef).collect(Collectors.toSet());
+                                    for (final Departure departure : departures) {
+                                        if (!oldJourneyRefs.contains(departure.journeyRef))
+                                            station.getDepartures().add(departure);
                                     }
-                                    final List<Departure> unsortedDepartures = station.getDepartures();
-                                    if (unsortedDepartures != null) {
-                                        unsortedDepartures.sort((d1, d2) ->
-                                                Math.toIntExact(d1.getTime().getTime() - d2.getTime().getTime()));
-                                    }
+                                } else {
+                                    station.setDepartures(departures);
+                                }
+                                final List<Departure> unsortedDepartures = station.getDepartures();
+                                if (unsortedDepartures != null) {
+                                    unsortedDepartures.sort((d1, d2) ->
+                                            Math.toIntExact(d1.getTime().getTime() - d2.getTime().getTime()));
+                                }
 
-                                    final List<LineDestination> stationLines = station.getLines();
-                                    final List<LineDestination> lines = stationDepartures.lines;
-                                    if (modeAppend && stationLines != null && lines != null) {
-                                        final Set<LineDestination> oldLineDestinations = new HashSet<>(stationLines);
-                                        for (final LineDestination lineDestination : lines) {
-                                            if (!oldLineDestinations.contains(lineDestination))
-                                                stationLines.add(lineDestination);
-                                        }
-                                        station.setLines(stationLines);
-                                    } else {
-                                        station.setLines(lines);
+                                final List<LineDestination> stationLines = station.getLines();
+                                final List<LineDestination> lines = stationDepartures.lines;
+                                if (modeAppend && stationLines != null && lines != null) {
+                                    final Set<LineDestination> oldLineDestinations = new HashSet<>(stationLines);
+                                    for (final LineDestination lineDestination : lines) {
+                                        if (!oldLineDestinations.contains(lineDestination))
+                                            stationLines.add(lineDestination);
                                     }
+                                    station.setLines(stationLines);
+                                } else {
+                                    station.setLines(lines);
+                                }
 
-                                    if (selectedLocation != null) {
-                                        if (combinedStation != null && combinedStation.baseStation.location.equals(selectedLocation)) {
-                                            somethingAdded = true;
-                                            newSelectedStation = station;
-                                        }
-                                    } else {
-                                        if (newSelectedStation == null || newSelectedStation.getDepartures().isEmpty()){
-                                            somethingAdded = true;
-                                            newSelectedStation = station;
-                                        }
+                                if (selectedLocation != null) {
+                                    if (combinedStation != null && combinedStation.baseStation.location.equals(selectedLocation)) {
+                                        somethingAdded = true;
+                                        newSelectedStation = station;
                                     }
+                                } else {
+                                    if (newSelectedStation == null || newSelectedStation.getDepartures().isEmpty()){
+                                        somethingAdded = true;
+                                        newSelectedStation = station;
+                                    }
+                                }
 
 //                                    if (...
 //                                    && selectedAllDepartures == null || selectedAllDepartures.isEmpty()
@@ -635,7 +637,6 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
 //                                        selectedLines = groupDestinationsByLine(station.getLines());
 //                                        selectedFilteredDepartures = null;
 //                                    }
-                                }
                             }
 
                             if (earlier) {
@@ -707,7 +708,6 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
             setLocationForMap(location);
 
         Station station = aStation;
-        Collection<Station> stations = null;
 
         CombinedStation combinedStation = null;
         for (final CombinedStation cs : combinedStations) {
@@ -727,7 +727,7 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
         }
 
         station = combinedStation.baseStation;
-        stations = combinedStation.stations.values();
+        final Collection<Station> stations = combinedStation.stations.values();
 
         final boolean changed = !station.location.equals(selectedLocation);
         selectedStation = station;
