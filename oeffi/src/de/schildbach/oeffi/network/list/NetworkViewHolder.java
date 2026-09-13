@@ -127,7 +127,7 @@ public class NetworkViewHolder extends RecyclerView.ViewHolder {
                 final PopupMenu contextMenu = new PopupMenu(context, v);
                 contextMenu.inflate(R.menu.network_picker_context);
                 contextMenu.getMenu().findItem(R.id.network_picker_context_credentials)
-                        .setEnabled(entry.credentialsRequired);
+                        .setVisible(entry.credentialsRequired);
                 contextMenu.setOnMenuItemClickListener(item ->
                         contextMenuItemListener.onNetworkContextMenuItemClick(entry, item.getItemId()));
                 contextMenu.show();
