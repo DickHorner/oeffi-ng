@@ -144,6 +144,8 @@ public class AppChooser {
             final List<ResolveInfo> resolveInfos = packageManager.queryIntentActivities(intentAndDescription.intent, PackageManager.MATCH_ALL);
             for (final ResolveInfo resolveInfo : resolveInfos) {
                 final ActivityInfo activityInfo = resolveInfo.activityInfo;
+                if (!activityInfo.exported)
+                    continue;
                 if (activityInfo.packageName.equals(myPackageName))
                     continue;
 
