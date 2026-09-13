@@ -39,6 +39,7 @@ public class PreferenceActivity extends OeffiActivity {
     public static final String EXTRA_PREFKEY = "prefkey";
     public static final String EXTRA_HANDLER = "handler";
     public static final String EXTRA_SHOW_FRAGMENT = "show_fragment";
+    public static final String PREFERENCE_FRAGMENT_TAG = "preferenceFragment";
 
     public static void start(final Activity activity) {
         start(activity, SettingsFragment.class);
@@ -81,14 +82,19 @@ public class PreferenceActivity extends OeffiActivity {
         final Intent intent = getIntent();
 
         try {
-            final String fragmentClassName = intent.getStringExtra(EXTRA_SHOW_FRAGMENT);
-            final Class<?> fragmentClass = fragmentClassName == null ? SettingsFragment.class
-                    : Class.forName(fragmentClassName);
-            preferenceFragment = (PreferenceFragment) fragmentClass.newInstance();
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.preferences_fragment_container, preferenceFragment)
-                    .commit();
+            if (savedInstanceState != null) {
+                preferenceFragment = (PreferenceFragment) getSupportFragmentManager()
+                        .findFragmentByTag(PREFERENCE_FRAGMENT_TAG);
+            } else {
+                final String fragmentClassName = intent.getStringExtra(EXTRA_SHOW_FRAGMENT);
+                final Class<?> fragmentClass = fragmentClassName == null ? SettingsFragment.class
+                        : Class.forName(fragmentClassName);
+                preferenceFragment = (PreferenceFragment) fragmentClass.newInstance();
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.preferences_fragment_container, preferenceFragment, PREFERENCE_FRAGMENT_TAG)
+                        .commit();
+            }
         } catch (final ClassNotFoundException | IllegalAccessException |
                        InstantiationException e) {
             throw new RuntimeException(e);
