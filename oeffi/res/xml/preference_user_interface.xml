@@ -29,6 +29,12 @@
         android:defaultValue="true"
         android:title="@string/user_interface_show_data_source_enabled_title" />
 
+    <CheckBoxPreference
+        android:key="user_interface_location_action_buttons_enabled"
+        android:defaultValue="true"
+        android:title="@string/user_interface_location_action_buttons_enabled_title"
+        android:summary="@string/user_interface_location_action_buttons_enabled_summary" />
+
 <!--    <Preference-->
 <!--        android:enabled="false"-->
 <!--        android:key="user_interface_accessibility_settings"-->

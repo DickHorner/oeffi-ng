@@ -55,6 +55,7 @@ import androidx.core.content.ContextCompat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.schildbach.oeffi.Application;
 import de.schildbach.oeffi.Constants;
 import de.schildbach.oeffi.OeffiActivity;
 import de.schildbach.oeffi.R;
@@ -93,11 +94,13 @@ public class LocationView extends LinearLayout implements LocationHelper.Callbac
 
     private final Resources res;
     private final LocationHelper locationHelper;
+    private final boolean actionButtonsEnabled;
 
     private Listener listener;
 
     private AutoCompleteTextView textView;
     private ViewGroup typeButtons;
+    private ViewGroup actionButtons;
     private ImageButton menuButton;
     private ImageButton contactButton;
     private ImageButton currentLocationButton;
@@ -140,6 +143,9 @@ public class LocationView extends LinearLayout implements LocationHelper.Callbac
 
         res = context.getResources();
         locationHelper = new LocationHelper(context, this);
+
+        actionButtonsEnabled = Application.getInstance().getSharedPreferences()
+                .getBoolean(Constants.PREFS_KEY_USER_INTERFACE_LOCATION_ACTION_BUTTONS_ENABLED, true);
 
         setup(context);
     }
@@ -290,6 +296,8 @@ public class LocationView extends LinearLayout implements LocationHelper.Callbac
         textView.addTextChangedListener(textChangedListener);
 
         typeButtons = findViewById(R.id.location_view_type_buttons);
+        actionButtons = findViewById(R.id.location_view_type_action_buttons);
+        ViewUtils.setVisibility(actionButtons, actionButtonsEnabled);
         menuButton = findViewById(R.id.location_view_menu_button);
         contactButton = findViewById(R.id.location_view_contact_button);
         alternateSearchButton = findViewById(R.id.location_view_alternate_search_button);
