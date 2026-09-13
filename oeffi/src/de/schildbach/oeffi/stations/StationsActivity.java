@@ -423,7 +423,7 @@ public class StationsActivity extends OeffiMainActivity implements StationsAware
                         if (!removed.isEmpty()) {
                             for (final Iterator<Station> i = stations.iterator(); i.hasNext(); ) {
                                 final Station station = i.next();
-                                if (!filter(station, products)) {
+                                if (!station.filter(products)) {
                                     i.remove();
                                     stationsMap.remove(station.location.id);
                                 }
@@ -1341,7 +1341,7 @@ public class StationsActivity extends OeffiMainActivity implements StationsAware
                         changed = true;
                     }
                 }
-            } else if (filter(freshStation, products)) {
+            } else if (freshStation.filter(products)) {
                 stations.add(freshStation);
                 stationsMap.put(freshStation.location.id, freshStation);
 
@@ -1383,33 +1383,6 @@ public class StationsActivity extends OeffiMainActivity implements StationsAware
         }
 
         updateGUI();
-    }
-
-    private static boolean filter(final Station station, final Collection<Product> productFilter) {
-        // if station has products declared, use that for matching
-        final Set<Product> stationProducts = station.location.products;
-        if (stationProducts != null && !stationProducts.isEmpty()) {
-            final Set<Product> copy = EnumSet.copyOf(stationProducts);
-            copy.retainAll(productFilter);
-            if (!copy.isEmpty())
-                return true;
-        }
-
-        // if station has lines, go through them and try to match each
-        final List<LineDestination> lines = station.getLines();
-        if (lines != null) {
-            for (final LineDestination line : lines) {
-                final Product product = line.line.product;
-                if (product != null && productFilter.contains(product))
-                    return true;
-            }
-        }
-
-        // special case: if station has no metadata suitable for product filtering, match always
-        if (stationProducts == null && lines == null)
-            return true;
-
-        return false;
     }
 
     public void updateWalkSpeed() {

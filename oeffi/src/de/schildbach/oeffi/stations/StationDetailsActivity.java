@@ -83,9 +83,6 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.PTDate;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.annotation.Nullable;
 
 import java.io.IOException;
@@ -174,6 +171,7 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
     private Station selectedStation;
     private CombinedStation selectedCombinedStation;
     private Location selectedCoord;
+    private final Set<Product> products = new HashSet<>(Product.ALL_SELECTABLE);
     @Nullable
     private List<Departure> selectedAllDepartures = null;
     private List<Departure> selectedFilteredDepartures = null;
@@ -187,9 +185,10 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
     private ImageButton nearbyButton;
     private ToggleImageButton favoriteButton;
     private ToggleImageButton hideCancelledDeparturesButton;
+    private View filterActionButton;
     private ViewAnimator viewAnimator;
     private RecyclerView listView;
-    private DeparturesAdapter listAdapter;
+    private DeparturesAdapter departuresAdapter;
     private TextView resultStatusView;
     private TextView disclaimerSourceView;
     private boolean hideCancelledDepartures;
@@ -273,6 +272,42 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
             selectedFilteredDepartures = null;
             updateGUI();
         });
+        filterActionButton = actionBar.addButton(R.drawable.ic_filter_list_24dp, R.string.stations_filter_title);
+        filterActionButton.setOnClickListener(v -> {
+            final StationsFilterPopup popup = new StationsFilterPopup(this, products,
+                    filter -> {
+                        final Set<Product> added = new HashSet<>(filter);
+                        added.removeAll(products);
+
+                        final Set<Product> removed = new HashSet<>(products);
+                        removed.removeAll(filter);
+
+                        products.clear();
+                        products.addAll(filter);
+
+                        if (!added.isEmpty()) {
+                            handler.post(this::requestRefresh);
+                        } else if (!removed.isEmpty()) {
+                            handler.post(this::requestRefresh);
+//                            for (final Iterator<Station> i = stations.iterator(); i.hasNext(); ) {
+//                                final Station station = i.next();
+//                                if (!station.filter(products)) {
+//                                    final String stationId = station.location.id;
+//                                    for (final CombinedStation combinedStation : combinedStations) {
+//                                        combinedStation.stations.remove(stationId);
+//                                    }
+//                                    i.remove();
+//                                }
+//                            }
+//
+//                            departuresAdapter.notifyDataSetChanged();
+//                            getMapView().invalidate();
+                        }
+
+                        updateGUI();
+                    });
+            popup.showAsDropDown(v);
+        });
         loadLaterButton = actionBar.addButton(R.drawable.ic_later_white_24dp, R.string.stations_station_details_action_load_later);
         loadLaterButton.setOnClickListener(buttonView -> {
             autoRefreshDisabled = true;
@@ -292,8 +327,8 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
         listView = findViewById(R.id.stations_station_details_list);
         listView.setLayoutManager(new LinearLayoutManager(this));
         listView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
-        listAdapter = new DeparturesAdapter(this);
-        listView.setAdapter(listAdapter);
+        departuresAdapter = new DeparturesAdapter(this);
+        listView.setAdapter(departuresAdapter);
         ViewCompat.setOnApplyWindowInsetsListener(listView, (v, windowInsets) -> {
             final Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(v.getPaddingLeft(), v.getPaddingTop(), v.getPaddingRight(),
@@ -352,6 +387,9 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
                 0, getResources().getDimensionPixelSize(R.dimen.text_padding_vertical_cram),
                 0, 0);
 
+        products.clear();
+        products.addAll(loadProductFilter());
+
         selectStation(station);
         statusMessage(getString(R.string.stations_station_details_progress));
         updateDisclaimerSource(disclaimerSourceView, selectedNetwork, null);
@@ -400,6 +438,13 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
     }
 
     @Override
+    protected void onPause() {
+        saveProductFilter(products);
+
+        super.onPause();
+    }
+
+    @Override
     protected void onStop() {
         if (tickReceiver != null) {
             unregisterReceiver(tickReceiver);
@@ -428,12 +473,16 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
     }
 
     private void updateGUI() {
+        // filter indicator
+        filterActionButton.setSelected(!productsAreNetworkDefault(products));
+
         showJourneyMessages = prefs.getBoolean("user_interface_station_departures_show_journey_messages", true);
         updateHeader();
+
         final List<Departure> selectedDepartures = this.getFilteredDepartures();
         if (selectedDepartures != null && !selectedDepartures.isEmpty()) {
             viewAnimator.setDisplayedChild(0);
-            listAdapter.notifyDataSetChanged();
+            departuresAdapter.notifyDataSetChanged();
         } else {
             statusMessage(getString(R.string.stations_station_details_list_empty));
         }
@@ -511,7 +560,6 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
                                     product(result.header));
                         }
 
-                        final Set<Product> productFilter = loadProductFilter();
                         if (result.status == QueryDeparturesResult.Status.OK) {
                             boolean somethingAdded = false;
                             Station newSelectedStation = null;
@@ -585,7 +633,7 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
                                     }
                                 }
 
-                                final List<Departure> departures = filterDeparturesByProducts(stationDepartures.departures, productFilter);
+                                final List<Departure> departures = filterDeparturesByProducts(stationDepartures.departures, products);
 
                                 if (modeAppend && station.getDepartures() != null) {
                                     final Set<JourneyRef> oldJourneyRefs = station.getDepartures().stream().map(

@@ -29,9 +29,11 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 
 import javax.annotation.Nullable;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
 
@@ -145,6 +147,33 @@ public class Station {
 
         relevantProduct = !products.isEmpty() ? products.iterator().next() : null;
         return relevantProduct;
+    }
+
+    public boolean filter(final Collection<Product> productFilter) {
+        // if station has products declared, use that for matching
+        final Set<Product> stationProducts = location.products;
+        if (stationProducts != null && !stationProducts.isEmpty()) {
+            final Set<Product> copy = EnumSet.copyOf(stationProducts);
+            copy.retainAll(productFilter);
+            if (!copy.isEmpty())
+                return true;
+        }
+
+        // if station has lines, go through them and try to match each
+        final List<LineDestination> lines = getLines();
+        if (lines != null) {
+            for (final LineDestination line : lines) {
+                final Product product = line.line.product;
+                if (product != null && productFilter.contains(product))
+                    return true;
+            }
+        }
+
+        // special case: if station has no metadata suitable for product filtering, match always
+        if (stationProducts == null && lines == null)
+            return true;
+
+        return false;
     }
 
     @Override
