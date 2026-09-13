@@ -149,6 +149,7 @@ public class StationsActivity extends OeffiMainActivity implements StationsAware
     public static final boolean DO_FILTER_BY_SEARCH_ON_NETWORK = false;
 
     public static final String PREF_KEY_SORT_BY_WALK = "stations_sort_by_walk";
+    public static final String PREF_KEY_WALK_DISTANCE_FACTOR = "walk_distance_factor";
 
     public static final String INTENT_EXTRA_OPEN_FAVORITES = StationsActivity.class.getName() + ".open_favorites";
     public static final String INTENT_EXTRA_NETWORK = StationsActivity.class.getName() + ".network";
@@ -1426,7 +1427,8 @@ public class StationsActivity extends OeffiMainActivity implements StationsAware
                 speedMetersPerMinute = JourneysAdapter.WALK_SPEED_NORMAL_METERS_PER_MINUTE;
                 break;
         }
-        walkPaceMillisPerMeter = 60000f / speedMetersPerMinute;
+        final float walkDistanceFactor = ((float) (prefs.getInt(PREF_KEY_WALK_DISTANCE_FACTOR, 50) + 100)) / 100f;
+        walkPaceMillisPerMeter = walkDistanceFactor * 60000f / speedMetersPerMinute;
     }
 
     private static void sortStations(final List<Station> stations) {

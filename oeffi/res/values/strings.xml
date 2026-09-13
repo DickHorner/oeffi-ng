@@ -563,6 +563,8 @@
     <string name="directions_preferences_walk_speed_summary">How fast can you walk?  [%s]</string>
     <string name="directions_preferences_walk_distance_title">Maximum walk distance</string>
     <string name="directions_preferences_walk_distance_summary">How far can you walk?  [%sm]</string>
+    <string name="directions_preferences_walk_distance_factor_title">Beeline to walk distance factor</string>
+    <string name="directions_preferences_walk_distance_factor_summary">How much larger is the usual walking distance compared to the direct linear distance? (default 150%%, about square root of 2)  [%s%%]</string>
     <string name="directions_preferences_min_transfer_time_title">Minimum transfer time</string>
     <string name="directions_preferences_min_transfer_time_summary">How long do you need for a transfer?  [%s]</string>
     <string name="directions_preferences_accessibility_title">Accessibility</string>

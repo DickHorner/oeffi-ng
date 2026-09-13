@@ -28,5 +28,7 @@ public class DirectionsParamsFragment extends PreferenceFragment {
         addPreferencesFromResource(R.xml.preference_directions_params);
 
         setupDynamicSummary("walk_distance", R.string.directions_preferences_walk_distance_summary);
+        setupDynamicSummary("walk_distance_factor", R.string.directions_preferences_walk_distance_factor_summary,
+                o -> ((Integer) o) + 100);
     }
 }

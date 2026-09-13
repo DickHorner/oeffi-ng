@@ -32,6 +32,13 @@
         android:key="walk_distance"
         android:summary="@string/directions_preferences_walk_distance_summary"
         android:title="@string/directions_preferences_walk_distance_title" />
+    <SeekBarPreference
+        android:inputType="number"
+        android:defaultValue="50"
+        android:max="300"
+        android:key="walk_distance_factor"
+        android:summary="@string/directions_preferences_walk_distance_factor_summary"
+        android:title="@string/directions_preferences_walk_distance_factor_title" />
     <ListPreference
         android:defaultValue="NEUTRAL"
         android:entries="@array/directions_accessibility"
