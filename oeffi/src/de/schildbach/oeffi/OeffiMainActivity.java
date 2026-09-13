@@ -96,24 +96,6 @@ public abstract class OeffiMainActivity extends OeffiActivity {
     }
 
     @Override
-    protected void onStart() {
-        final boolean restartRequired = PreferenceFragment.isRestartRequired();
-        PreferenceFragment.clearRestartRequired();
-        super.onStart();
-        if (!restartRequired)
-            return;
-        DialogBuilder.get(this)
-                .setTitle(R.string.preference_changes_require_restart_title)
-                .setMessage(R.string.preference_changes_require_restart_message)
-                .setPositiveButton(R.string.yes, (dialog, which) -> {
-                    Application.getInstance().postTerminate(this);
-                })
-                .setNegativeButton(R.string.no, null)
-                .setCancelable(true)
-                .show();
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
         if (stillCheckForUpdate) {

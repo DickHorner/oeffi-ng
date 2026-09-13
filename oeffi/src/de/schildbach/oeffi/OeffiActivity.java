@@ -79,6 +79,7 @@ import de.schildbach.oeffi.plans.PlansPickerActivity;
 import de.schildbach.oeffi.preference.AboutFragment;
 import de.schildbach.oeffi.preference.MapsFragment;
 import de.schildbach.oeffi.preference.PreferenceActivity;
+import de.schildbach.oeffi.preference.PreferenceFragment;
 import de.schildbach.oeffi.stations.FavoriteStationsActivity;
 import de.schildbach.oeffi.stations.StationContextMenu;
 import de.schildbach.oeffi.stations.StationsActivity;
@@ -277,9 +278,22 @@ public abstract class OeffiActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         updateFromPreferences();
+        final boolean restartRequired = PreferenceFragment.isRestartRequired();
+        PreferenceFragment.clearRestartRequired();
         super.onStart();
         if (mapView != null)
             mapView.onStart();
+        if (restartRequired) {
+            DialogBuilder.get(this)
+                    .setTitle(R.string.preference_changes_require_restart_title)
+                    .setMessage(R.string.preference_changes_require_restart_message)
+                    .setPositiveButton(R.string.yes, (dialog, which) -> {
+                        Application.getInstance().postTerminate(this);
+                    })
+                    .setNegativeButton(R.string.no, null)
+                    .setCancelable(true)
+                    .show();
+        }
     }
 
     @Override
