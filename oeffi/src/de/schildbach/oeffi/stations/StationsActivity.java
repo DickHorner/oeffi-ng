@@ -105,7 +105,6 @@ import de.schildbach.pte.provider.NetworkProvider;
 import de.schildbach.pte.provider.NetworkProvider.Capability;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.JourneyRef;
-import de.schildbach.pte.dto.LineDestination;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
@@ -121,7 +120,6 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -1444,7 +1442,7 @@ public class StationsActivity extends OeffiMainActivity implements StationsAware
                                     handler, networkProvider,
                                     requestedStationId,
                                     NetworkProvider.EquivalentStationsMode.META_IF_SAME_NAME,
-                                    presetTime, maxDepartures) {
+                                    presetTime, false, maxDepartures) {
                                 @Override
                                 protected void onPreExecute() {
                                     actionBar.startProgress();
@@ -1470,7 +1468,7 @@ public class StationsActivity extends OeffiMainActivity implements StationsAware
                                             final String subStationId = subStationDepartures.location.id;
                                             final List<Departure> departures = subStationDepartures.getNonCancelledDepartures();
                                             // Trim departures
-                                            while (departures.size() > maxDepartures)
+                                            while (departures.size() > maxEvents)
                                                 departures.remove(departures.size() - 1);
                                             final Station subStation = stationsMap.get(subStationId);
                                             if (subStation != null && !subStationId.equals(requestedStationId)) {

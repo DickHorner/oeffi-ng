@@ -156,7 +156,7 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
         return intent;
     }
 
-    public static final int MAX_DEPARTURES = 200;
+    public static final int MAX_DEPARTURES = 50;
 
     private final List<Station> stations = new ArrayList<>();
     private static class CombinedStation {
@@ -200,6 +200,7 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
     private Date presetTime;
     private JourneyRef presetJourneyRef;
     private Date presetDepartureTime;
+    private boolean showArrivals = false;
 
     private QueryJourneyRunnable queryJourneyRunnable;
     private final Handler handler = new Handler();
@@ -540,7 +541,7 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
                         handler, networkProvider,
                         requestedStationId,
                         NetworkProvider.EquivalentStationsMode.META_IF_SAME_NAME,
-                        fromTime, MAX_DEPARTURES) {
+                        fromTime, showArrivals, MAX_DEPARTURES) {
                     @Override
                     protected void onPreExecute() {
                         swipeRefresh.setRefreshing(true);
