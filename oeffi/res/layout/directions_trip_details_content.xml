@@ -19,7 +19,9 @@
             android:orientation="vertical"
             android:elevation="@dimen/elevation_content">
 
-            <include layout="@layout/action_bar" />
+            <de.schildbach.oeffi.OeffiActionBar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
             <de.schildbach.oeffi.util.HorizontalPager
                 android:id="@+id/directions_trip_details_pager"

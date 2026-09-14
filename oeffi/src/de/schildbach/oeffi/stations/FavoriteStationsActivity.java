@@ -36,7 +36,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import de.schildbach.oeffi.MyActionBar;
+import de.schildbach.oeffi.OeffiActionBar;
 import de.schildbach.oeffi.OeffiActivity;
 import de.schildbach.oeffi.R;
 import de.schildbach.oeffi.directions.DirectionsActivity;
@@ -159,7 +159,7 @@ public class FavoriteStationsActivity extends OeffiActivity
             return windowInsets;
         });
 
-        final MyActionBar actionBar = getMyActionBar();
+        final OeffiActionBar actionBar = getMyActionBar();
         setPrimaryColor(R.color.bg_action_bar_station_favorites);
         actionBar.setPrimaryTitle(R.string.stations_favorite_stations_title);
         if (this instanceof Main) {
@@ -169,6 +169,7 @@ public class FavoriteStationsActivity extends OeffiActivity
         actionBar.addButton(R.drawable.ic_add_white_24dp, R.string.stations_favorite_stations_add_title)
                 .setOnClickListener(view -> viewNewLocation.setVisibility(
                     viewNewLocation.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE));
+        actionBar.concludeSetup();
 
         viewAnimator = findViewById(R.id.favorites_layout);
 

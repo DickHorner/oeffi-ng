@@ -31,7 +31,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.preference.Preference;
 
 import de.schildbach.oeffi.Application;
-import de.schildbach.oeffi.MyActionBar;
+import de.schildbach.oeffi.OeffiActionBar;
 import de.schildbach.oeffi.OeffiActivity;
 import de.schildbach.oeffi.R;
 
@@ -115,10 +115,11 @@ public class PreferenceActivity extends OeffiActivity {
             return windowInsets;
         });
 
-        final MyActionBar actionBar = getMyActionBar();
+        final OeffiActionBar actionBar = getMyActionBar();
         actionBar.setBackgroundColor(getColor(R.color.bg_action_bar_settings));
         actionBar.setBack(v -> onBackPressed());
         // actionBar.setPrimaryTitle(getTitle());
+        actionBar.concludeSetup();
 
         handleIntent(intent);
     }
@@ -155,7 +156,7 @@ public class PreferenceActivity extends OeffiActivity {
     }
 
     public void setSubTitle(final CharSequence title) {
-        final MyActionBar actionBar = getMyActionBar();
+        final OeffiActionBar actionBar = getMyActionBar();
         final String mainTitle = getString(R.string.global_options_preferences_title);
         setTitle(mainTitle);
         actionBar.setSecondaryTitle(title.equals(mainTitle) ? null : title);
@@ -164,7 +165,7 @@ public class PreferenceActivity extends OeffiActivity {
     @Override
     public void setTitle(final CharSequence title) {
         super.setTitle(title);
-        final MyActionBar actionBar = getMyActionBar();
+        final OeffiActionBar actionBar = getMyActionBar();
         actionBar.setPrimaryTitle(title);
         actionBar.setSecondaryTitle(null);
     }

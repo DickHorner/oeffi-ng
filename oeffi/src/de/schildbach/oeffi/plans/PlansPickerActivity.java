@@ -45,7 +45,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import de.schildbach.oeffi.Constants;
-import de.schildbach.oeffi.MyActionBar;
+import de.schildbach.oeffi.OeffiActionBar;
 import de.schildbach.oeffi.OeffiMainActivity;
 import de.schildbach.oeffi.R;
 import de.schildbach.oeffi.URLs;
@@ -72,7 +72,7 @@ public class PlansPickerActivity extends OeffiMainActivity implements LocationHe
     private ConnectivityManager connectivityManager;
     private LocationHelper locationHelper;
 
-    private MyActionBar actionBar;
+    private OeffiActionBar actionBar;
     private RecyclerView listView;
     private PlansAdapter listAdapter;
     private TextView connectivityWarningView;
@@ -122,6 +122,7 @@ public class PlansPickerActivity extends OeffiMainActivity implements LocationHe
                 .setOnClickListener(v -> requery());
         // actionBar.addButton(R.drawable.ic_search_white_24dp, R.string.plans_picker_action_search_title)
         //         .setOnClickListener(v -> setListFilter(""));
+        actionBar.concludeSetup();
 
         cursor = getContentResolver().query(PlanContentProvider.CONTENT_URI(), null, null, null, null);
 

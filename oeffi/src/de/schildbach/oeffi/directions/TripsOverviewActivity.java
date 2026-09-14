@@ -43,7 +43,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import de.schildbach.oeffi.Constants;
-import de.schildbach.oeffi.MyActionBar;
+import de.schildbach.oeffi.OeffiActionBar;
 import de.schildbach.oeffi.OeffiActivity;
 import de.schildbach.oeffi.R;
 import de.schildbach.oeffi.directions.QueryTripRunnable.TripRequestData;
@@ -69,8 +69,6 @@ import de.schildbach.pte.exception.InternalErrorException;
 import de.schildbach.pte.exception.InvalidDataException;
 import de.schildbach.pte.exception.NotFoundException;
 import de.schildbach.pte.exception.SessionExpiredException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.net.ssl.SSLException;
@@ -264,12 +262,11 @@ public class TripsOverviewActivity extends OeffiActivity {
             return windowInsets;
         });
 
-        final MyActionBar actionBar = getMyActionBar();
+        final OeffiActionBar actionBar = getMyActionBar();
         setPrimaryColor(renderConfig.actionBarColor > 0 ? renderConfig.actionBarColor
                 : renderConfig.isOperationsPlanning ? R.color.bg_action_bar_operations_darkdefault
                 : R.color.bg_action_bar_directions_overview);
         actionBar.setBack(v -> finish());
-        actionBar.setCustomTitles(R.layout.directions_trip_overview_custom_title);
         if (searchMoreContext.canProvideSearchMore()) {
             searchMoreButton = actionBar.addButton(R.drawable.ic_search_more_white_24dp, R.string.directions_overview_search_more_title);
             setSearchMoreButtonEnabled(false);
@@ -280,6 +277,8 @@ public class TripsOverviewActivity extends OeffiActivity {
             });
         }
         actionBar.addProgressButton().setOnClickListener(v -> requestReload());
+        actionBar.concludeSetup();
+        actionBar.setCustomTitles(R.layout.directions_trip_overview_custom_title);
 
         swipeRefresh = findViewById(R.id.trips_refresh);
         swipeRefresh.setOnRefreshListener(this::requestReload);
@@ -572,7 +571,7 @@ public class TripsOverviewActivity extends OeffiActivity {
     }
 
     private class QueryMoreTripsRunnable implements Runnable {
-        final private MyActionBar actionBar = getMyActionBar();
+        final private OeffiActionBar actionBar = getMyActionBar();
         final private QueryTripsContext context;
         final private boolean initial, earlier, later, refreshPrepend;
         final private SearchMoreContext searchMoreContext;

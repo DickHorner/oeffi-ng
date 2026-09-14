@@ -53,7 +53,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import de.schildbach.oeffi.Constants;
-import de.schildbach.oeffi.MyActionBar;
+import de.schildbach.oeffi.OeffiActionBar;
 import de.schildbach.oeffi.OeffiActivity;
 import de.schildbach.oeffi.R;
 import de.schildbach.oeffi.StationsAware;
@@ -180,7 +180,7 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
     @Nullable
     private LinkedHashMap<Line, List<Destination>> selectedLines = null;
 
-    private MyActionBar actionBar;
+    private OeffiActionBar actionBar;
     private ImageButton loadLaterButton, loadEarlierButton;
     private ImageButton nearbyButton;
     private ToggleImageButton favoriteButton;
@@ -265,6 +265,7 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
                 }
             }
         });
+        actionBar.addButtonSplit();
         hideCancelledDeparturesButton = actionBar.addToggleButton(R.drawable.ic_cancelled_toggle_24dp,
                 R.string.stations_station_details_action_cancelled_title);
         hideCancelledDeparturesButton.setChecked(hideCancelledDepartures);
@@ -319,6 +320,7 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
             autoRefreshDisabled = true;
             load(nextEarlierTime, true);
         });
+        actionBar.concludeSetup();
 
         swipeRefresh = findViewById(R.id.stations_station_details_refresh);
         swipeRefresh.setOnRefreshListener(this::requestRefresh);

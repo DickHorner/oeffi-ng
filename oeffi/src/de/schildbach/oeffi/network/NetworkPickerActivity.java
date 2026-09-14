@@ -44,7 +44,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import de.schildbach.oeffi.AreaAware;
 import de.schildbach.oeffi.Constants;
 import de.schildbach.oeffi.DeviceLocationAware;
-import de.schildbach.oeffi.MyActionBar;
+import de.schildbach.oeffi.OeffiActionBar;
 import de.schildbach.oeffi.OeffiActivity;
 import de.schildbach.oeffi.R;
 import de.schildbach.oeffi.network.list.NetworkClickListener;
@@ -134,7 +134,7 @@ public class NetworkPickerActivity extends OeffiActivity implements
         }
     }
 
-    private MyActionBar actionBar;
+    private OeffiActionBar actionBar;
     private FilterSearchView filterSearchView;
     private RecyclerView listView;
     private NetworksAdapter listAdapter;
@@ -184,7 +184,7 @@ public class NetworkPickerActivity extends OeffiActivity implements
             return windowInsets;
         });
 
-        actionBar = findViewById(R.id.action_bar);
+        actionBar = getMyActionBar();
         setPrimaryColor(R.color.bg_action_bar);
         actionBar.setPrimaryTitle(getTitle());
         addShowMapButtonToActionBar(true, false);
@@ -250,6 +250,7 @@ public class NetworkPickerActivity extends OeffiActivity implements
                 });
             }
         }
+        actionBar.concludeSetup();
 
         lastNetworks.load();
         favoriteNetworks.load();

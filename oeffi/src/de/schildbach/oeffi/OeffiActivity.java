@@ -197,6 +197,8 @@ public abstract class OeffiActivity extends AppCompatActivity
         setContentView(layoutResID, true);
     }
 
+    protected View contentView;
+
     public View setContentView(final int layoutResID, final boolean showNavigation) {
         if (prefs.getBoolean("user_interface_darkmode_amoled_enabled", false))
             setTheme(R.style.My_Theme_Amoled);
@@ -207,7 +209,7 @@ public abstract class OeffiActivity extends AppCompatActivity
         navigationDrawerLayout = null;
         super.setContentView(layoutResID);
 
-        final View contentView = findViewById(android.R.id.content);
+        contentView = findViewById(android.R.id.content);
         contentView.setBackgroundColor(ViewUtils.getAttrColor(this, R.attr.bg_level0));
         setupMapView(contentView);
 
@@ -1171,8 +1173,8 @@ public abstract class OeffiActivity extends AppCompatActivity
         return application.packageInfo().firstInstallTime;
     }
 
-    protected final MyActionBar getMyActionBar() {
-        return findViewById(R.id.action_bar);
+    protected final OeffiActionBar getMyActionBar() {
+        return OeffiActionBar.findActionBar(contentView);
     }
 
     protected final void setPrimaryColor(final int colorResId) {

@@ -32,18 +32,12 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,7 +52,7 @@ public class LogViewerActivity extends OeffiActivity {
         context.startActivity(intent);
     }
 
-    private MyActionBar actionBar;
+    private OeffiActionBar actionBar;
     private boolean firstLoad;
     private final Map<String, String> colorMap = new HashMap<>();
     private long currentOffset;
@@ -70,7 +64,7 @@ public class LogViewerActivity extends OeffiActivity {
         setContentView(R.layout.logviewer_content);
 
         firstLoad = true;
-        actionBar = findViewById(R.id.action_bar);
+        actionBar = getMyActionBar();
         actionBar.setBack(null);
         actionBar.setBackgroundColor(getResources().getColor(R.color.bg_action_bar_logviewer));
         actionBar.setPrimaryTitle(R.string.global_options_show_log_title);
@@ -79,6 +73,7 @@ public class LogViewerActivity extends OeffiActivity {
                 .setOnClickListener(v -> moveRelative(BLOCK_SIZE / 2));
         actionBar.addButton(R.drawable.ic_expand_less_white_24dp, R.string.log_viewer_button_backwards_button)
                 .setOnClickListener(v -> moveRelative(-(BLOCK_SIZE / 2)));
+        actionBar.concludeSetup();
 
         final View contentView = findViewById(android.R.id.content);
         ViewCompat.setOnApplyWindowInsetsListener(contentView, (v, windowInsets) -> {

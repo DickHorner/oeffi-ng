@@ -83,7 +83,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import de.schildbach.oeffi.Constants;
 import de.schildbach.oeffi.DeviceAdmin;
 import de.schildbach.oeffi.DeviceLocationAware;
-import de.schildbach.oeffi.MyActionBar;
+import de.schildbach.oeffi.OeffiActionBar;
 import de.schildbach.oeffi.OeffiActivity;
 import de.schildbach.oeffi.R;
 import de.schildbach.oeffi.TripAware;
@@ -252,7 +252,7 @@ public class TripDetailsActivity extends OeffiActivity implements LocationListen
         return intent;
     }
 
-    protected MyActionBar actionBar;
+    protected OeffiActionBar actionBar;
     protected LayoutInflater inflater;
     protected HorizontalPager viewPager;
     protected Resources res;
@@ -349,7 +349,7 @@ public class TripDetailsActivity extends OeffiActivity implements LocationListen
 
         setupFromTrip(baseTrip);
 
-        final View contentView = setContentView(R.layout.directions_trip_details_content, isTaskRoot());
+        setContentView(R.layout.directions_trip_details_content, isTaskRoot());
         ViewCompat.setOnApplyWindowInsetsListener(contentView, (v, windowInsets) -> {
             final Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(insets.left, 0, insets.right, 0);
@@ -508,6 +508,7 @@ public class TripDetailsActivity extends OeffiActivity implements LocationListen
 //                    .setOnClickListener(v -> shareCalendarEntry());
 //        }
         addActionBarButtons();
+        actionBar.concludeSetup();
 
         legsScrollView = findViewById(R.id.directions_trip_details_legs_scroll);
         legsGroup = findViewById(R.id.directions_trip_details_legs_group);

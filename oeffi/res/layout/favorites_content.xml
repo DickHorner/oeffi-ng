@@ -11,7 +11,9 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <include layout="@layout/action_bar" />
+        <de.schildbach.oeffi.OeffiActionBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
         <de.schildbach.oeffi.util.locationview.LocationView
             android:id="@+id/favorites_new"

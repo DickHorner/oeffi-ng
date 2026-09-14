@@ -4,7 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include layout="@layout/action_bar" />
+    <de.schildbach.oeffi.OeffiActionBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
     <ScrollView
         android:id="@+id/logviewer_scroll"

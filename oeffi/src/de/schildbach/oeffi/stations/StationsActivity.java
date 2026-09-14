@@ -73,7 +73,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import de.schildbach.oeffi.Constants;
 import de.schildbach.oeffi.DeviceLocationAware;
-import de.schildbach.oeffi.MyActionBar;
+import de.schildbach.oeffi.OeffiActionBar;
 import de.schildbach.oeffi.OeffiMainActivity;
 import de.schildbach.oeffi.R;
 import de.schildbach.oeffi.StationsAware;
@@ -179,7 +179,7 @@ public class StationsActivity extends OeffiMainActivity implements StationsAware
     private final Set<Product> products = new HashSet<>(Product.ALL_SELECTABLE);
     private String accurateLocationProvider, lowPowerLocationProvider;
 
-    private MyActionBar actionBar;
+    private OeffiActionBar actionBar;
     private ViewGroup stationsContainer;
     private RecyclerView stationList;
     private LinearLayoutManager stationListLayoutManager;
@@ -444,6 +444,7 @@ public class StationsActivity extends OeffiMainActivity implements StationsAware
         //                return false;
         //            }
         //        });
+        actionBar.concludeSetup();
 
         swipeRefresh = findViewById(R.id.stations_refresh);
         swipeRefresh.setOnRefreshListener(this::requestRefresh);
@@ -1209,7 +1210,7 @@ public class StationsActivity extends OeffiMainActivity implements StationsAware
             final Location referenceLocation = getReferenceLocation();
 
             if (referenceLocation != null) {
-                final MyActionBar actionBar = getMyActionBar();
+                final OeffiActionBar actionBar = getMyActionBar();
 
                 final StringBuilder favoriteIds = new StringBuilder();
                 for (final Map.Entry<String, Integer> entry : favorites.entrySet())

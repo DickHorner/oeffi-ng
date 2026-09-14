@@ -68,7 +68,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import de.schildbach.oeffi.Application;
 import de.schildbach.oeffi.Constants;
 import de.schildbach.oeffi.FromViaToAware;
-import de.schildbach.oeffi.MyActionBar;
+import de.schildbach.oeffi.OeffiActionBar;
 import de.schildbach.oeffi.OeffiMainActivity;
 import de.schildbach.oeffi.R;
 import de.schildbach.oeffi.directions.navigation.NavigationNotification;
@@ -326,7 +326,7 @@ public class DirectionsActivity extends OeffiMainActivity implements
                 return windowInsets;
             });
 
-            final MyActionBar actionBar = getMyActionBar();
+            final OeffiActionBar actionBar = getMyActionBar();
             setPrimaryColor(renderConfig.actionBarColor > 0 ? renderConfig.actionBarColor : getActionBarColorId());
             actionBar.setPrimaryTitle(getActionBarTitleStringId());
             if (renderConfig.isAlternativeConnectionSearch
@@ -397,6 +397,7 @@ public class DirectionsActivity extends OeffiMainActivity implements
                     return false;
                 }
             });
+            actionBar.concludeSetup();
 
             findViewById(R.id.directions_network_missing_capability_button)
                     .setOnClickListener(v -> startNetworkPicker());
