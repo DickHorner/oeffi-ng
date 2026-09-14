@@ -13,7 +13,7 @@
     <dimen name="action_bar_height">60dp</dimen>
     <dimen name="action_bar_button_width">50dp</dimen>
     <dimen name="action_bar_padding_vertical">8dp</dimen>
-    <dimen name="action_bar_padding_horizontal">10dp</dimen>
+    <dimen name="action_bar_padding_horizontal">13dp</dimen>
     <dimen name="dialog_padding">16dp</dimen>
     <dimen name="text_padding_vertical_cram">3dp</dimen>
     <dimen name="text_padding_vertical">6dp</dimen>
