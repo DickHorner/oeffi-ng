@@ -28,7 +28,8 @@
     <!-- activity titles -->
     <string name="stations_activity_title">Nearby …</string>
     <string name="station_details_activity_title">Station Departures</string>
-    <string name="station_details_activity_short_title">Departures</string>
+    <string name="station_details_activity_departures_short_title">Departures</string>
+    <string name="station_details_activity_arrivals_short_title">Arrivals</string>
     <string name="directions_activity_title">Directions</string>
     <string name="operations_activity_title">Operations</string>
     <string name="trip_details_title">Connection Details</string>
@@ -194,8 +195,8 @@
     <string name="stations_nearby_geo_link_title">Show Nearby &lt;b>Stops&lt;/b></string>
 
     <!-- station list -->
-    <string name="stations_list_entry_no_departures">(No departures)</string>
-    <string name="stations_list_entry_product_filtered">(None of the departures match the product filter)</string>
+    <string name="stations_list_entry_no_departures">(No departures/arrivals)</string>
+    <string name="stations_list_entry_product_filtered">(None of the departures/arrivals match the product filter)</string>
     <string name="stations_list_entry_interval">(approx. %d min interval)</string>
     <string name="stations_list_acquiring_location">Acquiring location…</string>
     <string name="stations_list_cannot_acquire_location">Cannot acquire device location.</string>
@@ -214,8 +215,8 @@
     <string name="stations_location_provider_enabled">enabled</string>
     <string name="stations_location_provider_acquiring">acquiring</string>
     <string name="stations_message_missing_capability">The selected transportation network does not serve departure times.\nConsider selecting another network.</string>
-    <string name="stations_connectivity_warning">Offline mode: Your device is not connected.\nThus, departure times will not be shown.</string>
-    <string name="stations_no_departures_for_address">Cannot show departures for an address.</string>
+    <string name="stations_connectivity_warning">Offline mode: Your device is not connected.\nThus, departure/arrival times will not be shown.</string>
+    <string name="stations_no_departures_for_address">Cannot show departures/arrivals for an address.</string>
     <string name="stations_location_hint">Find near …</string>
     <string name="stations_journeys_description">
         Services nearby taking &lt;b>footpaths&lt;/b> to possible stations into account.
@@ -273,8 +274,8 @@
     <string name="stations_station_details_action_explore_nearby_title">Show departures nearby</string>
     <string name="stations_station_details_action_favorite_title">Favorite</string>
     <string name="stations_station_details_action_cancelled_title">Hide/show cancelled departures</string>
-    <string name="stations_station_details_progress">Loading departures…</string>
-    <string name="stations_station_details_list_empty">No departures</string>
+    <string name="stations_station_details_progress">Loading departures / arrivals …</string>
+    <string name="stations_station_details_list_empty">No departures / arrivals</string>
 
     <!-- station details options -->
     <string name="stations_station_details_options_add_favorite_title">Add favorite</string>

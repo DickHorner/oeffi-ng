@@ -237,7 +237,18 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
         actionBar = getMyActionBar();
         setPrimaryColor(R.color.bg_action_bar_stations);
         actionBar.setBack(isTaskRoot() ? null : v -> finish());
-        actionBar.setPrimaryTitle(R.string.station_details_activity_short_title);
+        actionBar.setPrimaryTitle(R.string.station_details_activity_departures_short_title);
+        actionBar.setTitlesOnClickListener(v -> {
+            final boolean newShowArrivals = !showArrivals;
+            if (NetworkProviderFactory.provider(selectedNetwork).hasCapabilities(
+                    newShowArrivals ? NetworkProvider.Capability.ARRIVALS : NetworkProvider.Capability.DEPARTURES)) {
+                showArrivals = newShowArrivals;
+                actionBar.setPrimaryTitle(showArrivals
+                        ? R.string.station_details_activity_arrivals_short_title
+                        : R.string.station_details_activity_departures_short_title);
+                requestRefresh();
+            }
+        });
         // actionBar.swapTitles();
         actionBar.addProgressButton().setOnClickListener(v -> requestRefresh());
         nearbyButton = actionBar.addButton(R.drawable.ic_radar_white_24dp, R.string.stations_station_details_action_explore_nearby_title);
@@ -1124,14 +1135,15 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
 
             // destination
             final Destination destination = departure.destination;
+            final boolean isArrival = departure.isArrival;
             final String prefix;
             if (destination != null) {
                 if (!destination.isNotCommonType) {
-                    prefix = Constants.DESTINATION_ARROW_PREFIX;
+                    prefix = isArrival ? Constants.ORIGIN_ARROW_PREFIX : Constants.DESTINATION_ARROW_PREFIX;
                 } else if (destination.location.type == LocationType.STATION) {
-                    prefix = Constants.DESTINATION_STATION_ARROW_PREFIX;
+                    prefix = isArrival ? Constants.ORIGIN_STATION_ARROW_PREFIX : Constants.DESTINATION_STATION_ARROW_PREFIX;
                 } else {
-                    prefix = Constants.DESTINATION_DIRECTION_ARROW_PREFIX;
+                    prefix = isArrival ? Constants.ORIGIN_DIRECTION_ARROW_PREFIX : Constants.DESTINATION_DIRECTION_ARROW_PREFIX;
                 }
                 destinationView.setText(prefix + Formats.fullLocationNameIfDifferentPlace(destination.location, station));
 //                itemView.setOnClickListener(destination.id == null ? null : v ->

@@ -28,7 +28,8 @@
     <!-- activity titles -->
     <string name="stations_activity_title">In der Nähe …</string>
     <string name="station_details_activity_title">Haltestellen-Details</string>
-    <string name="station_details_activity_short_title">Abfahrten</string>
+    <string name="station_details_activity_departures_short_title">Abfahrten</string>
+    <string name="station_details_activity_arrivals_short_title">Ankünfte</string>
     <string name="directions_activity_title">Verbindungsabfrage</string>
     <string name="operations_activity_title">Einsatzplanung</string>
     <string name="trip_details_title">Verbindungsdetails</string>
@@ -193,8 +194,8 @@
     <string name="stations_nearby_geo_link_title">Zeige nahegelegene &lt;b>Haltestellen&lt;/b></string>
 
     <!-- station list -->
-    <string name="stations_list_entry_no_departures">(Keine Abfahrten)</string>
-    <string name="stations_list_entry_product_filtered">(Keine der Abfahrten passen auf den Produktfilter)</string>
+    <string name="stations_list_entry_no_departures">(Keine Abfahrten/Ankünfte)</string>
+    <string name="stations_list_entry_product_filtered">(Keine der Abfahrten/Ankünfte passen auf den Produktfilter)</string>
     <string name="stations_list_entry_interval">(ca. alle %d min)</string>
     <string name="stations_list_acquiring_location">Ermittle Standort…</string>
     <string name="stations_list_cannot_acquire_location">Kann Standort nicht ermitteln.</string>
@@ -213,8 +214,8 @@
     <string name="stations_location_provider_enabled">eingeschaltet</string>
     <string name="stations_location_provider_acquiring">ermittle</string>
     <string name="stations_message_missing_capability">Abfahrtsinformationen sind in dem gewählten Verkehrsnetz nicht verfügbar.\nWähle ggf. ein anderes Netz.</string>
-    <string name="stations_connectivity_warning">Offline-Modus: Dein Gerät ist nicht verbunden.\nDaher werden keine Abfahrtszeiten angezeigt.</string>
-    <string name="stations_no_departures_for_address">Für eine Adresse können keine Abfahrten angezeigt werden.</string>
+    <string name="stations_connectivity_warning">Offline-Modus: Dein Gerät ist nicht verbunden.\nDaher werden keine Abfahrts-/Ankunftzeiten angezeigt.</string>
+    <string name="stations_no_departures_for_address">Für eine Adresse können keine Abfahrten/Ankünfte angezeigt werden.</string>
     <string name="stations_location_hint">Suche bei …</string>
     <string name="stations_journeys_description">
         Fahrten in der Nähe mit Berücksichtigung der &lt;b>Fußwege&lt;/b> zu den möglichen Haltestellen.
@@ -272,8 +273,8 @@
     <string name="stations_station_details_action_explore_nearby_title">Abfahrten in der Nähe</string>
     <string name="stations_station_details_action_favorite_title">Favorit</string>
     <string name="stations_station_details_action_cancelled_title">Entferne/zeige stornierte Abfahrten</string>
-    <string name="stations_station_details_progress">Lade Abfahrtszeiten…</string>
-    <string name="stations_station_details_list_empty">Keine Abfahrten</string>
+    <string name="stations_station_details_progress">Lade Abfahrts- bzw. Ankunftzeiten…</string>
+    <string name="stations_station_details_list_empty">Keine Abfahrten bzw. Ankünfte</string>
 
     <!-- station details options -->
     <string name="stations_station_details_options_add_favorite_title">Favorisieren</string>
