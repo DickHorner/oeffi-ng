@@ -184,6 +184,7 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
     private ImageButton loadLaterButton, loadEarlierButton;
     private ImageButton nearbyButton;
     private ToggleImageButton favoriteButton;
+    private ToggleImageButton showArrivalsButton;
     private ToggleImageButton hideCancelledDeparturesButton;
     private View filterActionButton;
     private ViewAnimator viewAnimator;
@@ -238,17 +239,7 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
         setPrimaryColor(R.color.bg_action_bar_stations);
         actionBar.setBack(isTaskRoot() ? null : v -> finish());
         actionBar.setPrimaryTitle(R.string.station_details_activity_departures_short_title);
-        actionBar.setTitlesOnClickListener(v -> {
-            final boolean newShowArrivals = !showArrivals;
-            if (NetworkProviderFactory.provider(selectedNetwork).hasCapabilities(
-                    newShowArrivals ? NetworkProvider.Capability.ARRIVALS : NetworkProvider.Capability.DEPARTURES)) {
-                showArrivals = newShowArrivals;
-                actionBar.setPrimaryTitle(showArrivals
-                        ? R.string.station_details_activity_arrivals_short_title
-                        : R.string.station_details_activity_departures_short_title);
-                requestRefresh();
-            }
-        });
+        actionBar.setTitlesOnClickListener(v -> setShowArrivals(!showArrivals));
         // actionBar.swapTitles();
         actionBar.addProgressButton().setOnClickListener(v -> requestRefresh());
         nearbyButton = actionBar.addButton(R.drawable.ic_radar_white_24dp, R.string.stations_station_details_action_explore_nearby_title);
@@ -276,6 +267,9 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
                 }
             }
         });
+        showArrivalsButton = actionBar.addToggleButton(R.drawable.ic_arrival_departure_white_24dp,
+                R.string.stations_station_details_action_show_arrivals_title);
+        showArrivalsButton.setOnCheckedChangeListener((buttonView, isChecked) -> setShowArrivals(isChecked));
         actionBar.addButtonSplit();
         hideCancelledDeparturesButton = actionBar.addToggleButton(R.drawable.ic_cancelled_toggle_24dp,
                 R.string.stations_station_details_action_cancelled_title);
@@ -480,6 +474,18 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
         super.onConfigurationChanged(config);
 
         updateFragments();
+    }
+
+    private void setShowArrivals(final boolean newShowArrivals) {
+        if (NetworkProviderFactory.provider(selectedNetwork).hasCapabilities(
+                newShowArrivals ? NetworkProvider.Capability.ARRIVALS : NetworkProvider.Capability.DEPARTURES)) {
+            showArrivals = newShowArrivals;
+            actionBar.setPrimaryTitle(showArrivals
+                    ? R.string.station_details_activity_arrivals_short_title
+                    : R.string.station_details_activity_departures_short_title);
+            showArrivalsButton.setChecked(showArrivals);
+            requestRefresh();
+        }
     }
 
     protected void updateFragments() {

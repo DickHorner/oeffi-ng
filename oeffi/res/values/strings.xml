@@ -273,6 +273,7 @@
     <string name="stations_station_details_action_load_earlier">Load earlier departures</string>
     <string name="stations_station_details_action_explore_nearby_title">Show departures nearby</string>
     <string name="stations_station_details_action_favorite_title">Favorite</string>
+    <string name="stations_station_details_action_show_arrivals_title">Show departures or arrivals</string>
     <string name="stations_station_details_action_cancelled_title">Hide/show cancelled departures</string>
     <string name="stations_station_details_progress">Loading departures / arrivals …</string>
     <string name="stations_station_details_list_empty">No departures / arrivals</string>
