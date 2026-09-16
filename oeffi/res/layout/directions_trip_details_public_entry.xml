@@ -24,7 +24,6 @@
 
         <LinearLayout
             android:orientation="vertical"
-            android:id="@+id/directions_trip_details_public_entry_line_group"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -39,25 +38,41 @@
                 android:textColor="@color/fg_significant"
                 android:textSize="@dimen/font_size_large" />
 
-            <TextView
-                android:id="@+id/directions_trip_details_public_entry_accessibility"
+            <LinearLayout
+                android:orientation="vertical"
+                android:id="@+id/directions_trip_details_public_entry_vehicle_information_click"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:drawableLeft="@drawable/ic_accessible_grey600_18dp"
-                android:drawablePadding="@dimen/text_padding_horizontal"
-                android:text="@string/directions_trip_details_public_entry_accessibility"
-                android:textColor="@color/fg_insignificant"
-                android:visibility="gone" />
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/directions_trip_details_public_entry_accessibility"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/ic_accessible_grey600_18dp"
+                    android:drawablePadding="@dimen/text_padding_horizontal"
+                    android:text="@string/directions_trip_details_public_entry_accessibility"
+                    android:textColor="@color/fg_insignificant"
+                    android:visibility="gone" />
 
-            <TextView
-                android:id="@+id/directions_trip_details_public_entry_bicycle_carriage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:drawableLeft="@drawable/ic_directions_bike_grey600_18dp"
-                android:drawablePadding="@dimen/text_padding_horizontal"
-                android:text="@string/directions_trip_details_public_entry_bicycle_carriage"
-                android:textColor="@color/fg_insignificant"
-                android:visibility="gone" />
+                <TextView
+                    android:id="@+id/directions_trip_details_public_entry_bicycle_carriage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/ic_directions_bike_grey600_18dp"
+                    android:drawablePadding="@dimen/text_padding_horizontal"
+                    android:text="@string/directions_trip_details_public_entry_bicycle_carriage"
+                    android:textColor="@color/fg_insignificant"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/directions_trip_details_public_entry_vehicle_information_available"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/ic_direction_sequence_grey600_18dp"
+                    android:drawablePadding="@dimen/text_padding_horizontal"
+                    android:text="@string/directions_trip_details_public_entry_vehicle_information_available"
+                    android:textColor="@color/fg_insignificant"
+                    android:visibility="gone" />
+            </LinearLayout>
         </LinearLayout>
 
         <de.schildbach.oeffi.util.ToggleImageButton

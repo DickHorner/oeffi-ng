@@ -472,6 +472,7 @@
 
     <string name="directions_trip_details_public_entry_accessibility">Abschnitt ist barrierefrei</string>
     <string name="directions_trip_details_public_entry_bicycle_carriage">Fahrradmitnahme ggf. möglich</string>
+    <string name="directions_trip_details_public_entry_vehicle_information_available">Wagenreihung ggf. verfügbar</string>
     <string name="directions_trip_details_time_left_minutes">Noch &lt;b>%1$d Minuten&lt;/b></string>
     <string name="directions_trip_details_time_left_hours">Noch &lt;b>%1$d Stunden&lt;/b></string>
     <string name="directions_trip_details_time_left_days">Noch &lt;b>%1$d Tage&lt;/b></string>
@@ -497,6 +498,7 @@
     <string name="directions_trip_details_shortened_message">%1$s&lt;br>… mehr anzeigen …</string>
     <string name="directions_trip_details_see_below_message">Siehe Hinweise unten …</string>
     <string name="directions_trip_details_extra_data_error">Zusätzliche Informationen können nicht geladen werden.</string>
+    <string name="directions_trip_details_vehicle_information_error">Daten zur Wagenreihung können nicht geladen werden.</string>
 
     <!-- directions trip connection evaluation -->
     <string name="directions_trip_conneval_with_transfer">%1$s mit %2$s</string>

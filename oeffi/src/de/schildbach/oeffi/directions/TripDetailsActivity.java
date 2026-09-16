@@ -116,7 +116,9 @@ import de.schildbach.oeffi.util.locationview.LocationTextView;
 import de.schildbach.pte.NetworkId;
 import de.schildbach.pte.dto.Destination;
 import de.schildbach.pte.dto.LocationType;
+import de.schildbach.pte.dto.QueryVehicleInformationResult;
 import de.schildbach.pte.dto.TripRef;
+import de.schildbach.pte.dto.VehicleInformation;
 import de.schildbach.pte.provider.NetworkProvider;
 import de.schildbach.pte.dto.Fare;
 import de.schildbach.pte.dto.JourneyRef;
@@ -134,6 +136,7 @@ import de.schildbach.pte.dto.TripShare;
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessagePack;
 
+import java.io.IOException;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -278,6 +281,7 @@ public class TripDetailsActivity extends OeffiActivity implements LocationListen
     private ToggleImageButton trackButton;
     protected boolean mustEnableTrackButton;
 
+    protected NetworkProvider networkProvider;
     protected TripRenderer tripRenderer;
     protected RenderConfig renderConfig;
     private PTDate highlightedTime;
@@ -338,6 +342,7 @@ public class TripDetailsActivity extends OeffiActivity implements LocationListen
         final IntentData intentData = new IntentData(getIntent());
         renderConfig = intentData.renderConfig;
         network = intentData.network;
+        networkProvider = NetworkProviderFactory.provider(network);
         final Trip baseTrip = intentData.trip;
 
         log.info(
@@ -447,11 +452,10 @@ public class TripDetailsActivity extends OeffiActivity implements LocationListen
                         } else if (itemId == R.id.directions_trip_details_action_share_link) {
                             intentSupplier = () -> shareTripLong(true);
                         } else if (itemId == R.id.directions_trip_details_action_open_direct_link) {
-                            final NetworkProvider provider = NetworkProviderFactory.provider(network);
-                            if (provider.hasCapabilities(NetworkProvider.Capability.TRIP_LINKING)) {
+                            if (networkProvider.hasCapabilities(NetworkProvider.Capability.TRIP_LINKING)) {
                                 backgroundHandler.post(() -> {
                                     try {
-                                        final String link = provider.getOpenLink(trip);
+                                        final String link = networkProvider.getOpenLink(trip);
                                         runOnUiThread(() -> {
                                             @SuppressLint("UnsafeImplicitIntentLaunch")
                                             final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
@@ -465,11 +469,10 @@ public class TripDetailsActivity extends OeffiActivity implements LocationListen
                             }
                             return true;
                         } else if (itemId == R.id.directions_trip_details_action_open_share_link) {
-                            final NetworkProvider provider = NetworkProviderFactory.provider(network);
-                            if (provider.hasCapabilities(NetworkProvider.Capability.TRIP_SHARING)) {
+                            if (networkProvider.hasCapabilities(NetworkProvider.Capability.TRIP_SHARING)) {
                                 backgroundHandler.post(() -> {
                                     try {
-                                        final String link = provider.getShareLink(trip);
+                                        final String link = networkProvider.getShareLink(trip);
                                         runOnUiThread(() -> {
                                             @SuppressLint("UnsafeImplicitIntentLaunch")
                                             final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
@@ -1334,12 +1337,16 @@ public class TripDetailsActivity extends OeffiActivity implements LocationListen
                 .setText(fares.get(0).currency.getSymbol());
     }
 
+    private boolean hasVehicleInformationCapability;
+
     protected boolean updatePublicLeg(
             final View row,
             final TripRenderer.LegContainer legC,
             final TripRenderer.LegContainer walkLegC,
             final TripRenderer.LegContainer nextLegC,
             final Date now) {
+        hasVehicleInformationCapability = networkProvider.hasCapabilities(NetworkProvider.Capability.VEHICLE_INFORMATION);
+
         final TripRenderer.LegContainer nearestPublicLeg = tripRenderer.nearestPublicLeg;
         final boolean isHighlightedLeg = nearestPublicLeg == legC;
         final int highlightedLocationIndex = isHighlightedLeg ? nearestPublicLeg.nearestStopIndex : -1;
@@ -1349,9 +1356,11 @@ public class TripDetailsActivity extends OeffiActivity implements LocationListen
         final Location destinationLocation = destination == null ? null : destination.location;
         final String destinationName = Formats.fullLocationName(destinationLocation);
         final boolean showDestination = destinationName != null;
-        final boolean showAccessibility = leg.line.hasAttr(Line.Attr.WHEEL_CHAIR_ACCESS)
+        final Line line = leg.line;
+        final boolean mayHaveVehicleInformation = hasVehicleInformationCapability && networkProvider.mayProvideVehicleInformation(line);
+        final boolean showAccessibility = line.hasAttr(Line.Attr.WHEEL_CHAIR_ACCESS)
                 && !NetworkProvider.Accessibility.NEUTRAL.equals(application.prefsGetAccessibility());
-        final boolean showBicycleCarriage = leg.line.hasAttr(Line.Attr.BICYCLE_CARRIAGE)
+        final boolean showBicycleCarriage = line.hasAttr(Line.Attr.BICYCLE_CARRIAGE)
                 && (isBicycleTravel()
                     || (renderConfig.queryTripsRequestData != null
                         && renderConfig.queryTripsRequestData.options != null
@@ -1359,7 +1368,7 @@ public class TripDetailsActivity extends OeffiActivity implements LocationListen
                         && renderConfig.queryTripsRequestData.options.flags.contains(NetworkProvider.TripFlag.BIKE)));
         final List<Stop> intermediateStops = leg.intermediateStops;
         final List<Stop> intermediateSimulatedStops = simulatedLeg == null ? null : simulatedLeg.intermediateStops;
-        String message = leg.message != null ? leg.message : leg.line.message;
+        String message = leg.message != null ? leg.message : line.message;
         if (message != null && renderConfig.isJourney) {
             final Trip.Public nextSubJourney = nextLegC == null ? null : nextLegC.publicLeg;
             if (nextSubJourney != null) {
@@ -1372,7 +1381,7 @@ public class TripDetailsActivity extends OeffiActivity implements LocationListen
         boolean isRowSimulated = false;
 
         final LineView lineView = row.findViewById(R.id.directions_trip_details_public_entry_line);
-        lineView.setLine(leg.line);
+        lineView.setLine(line);
         // why clipping width ???
         // if (showDestination || showAccessibility)
         //     lineView.setMaxWidth(res.getDimensionPixelSize(R.dimen.line_max_width));
@@ -1444,8 +1453,15 @@ public class TripDetailsActivity extends OeffiActivity implements LocationListen
         final View bicycleCarriageView = row.findViewById(R.id.directions_trip_details_public_entry_bicycle_carriage);
         ViewUtils.setVisibility(bicycleCarriageView, showBicycleCarriage);
 
+        final View vehicleInformationAvailableView = row.findViewById(R.id.directions_trip_details_public_entry_vehicle_information_available);
+        ViewUtils.setVisibility(vehicleInformationAvailableView, mayHaveVehicleInformation);
+        if (mayHaveVehicleInformation) {
+            final View vehicleInformationClickView = row.findViewById(R.id.directions_trip_details_public_entry_vehicle_information_click);
+            vehicleInformationClickView.setOnClickListener(v -> loadAndShowVehicleInformation(leg.journeyRef, leg.departureStop));
+        }
+
         if (!renderConfig.isJourney && leg.journeyRef != null
-                && NetworkProviderFactory.provider(network).hasCapabilities(NetworkProvider.Capability.JOURNEY)) {
+                && networkProvider.hasCapabilities(NetworkProvider.Capability.JOURNEY)) {
             final View.OnClickListener onClickListener = clickedView -> {
                 queryJourneyRunnable = QueryJourneyRunnable.startShowJourney(
                         this, clickedView, queryJourneyRunnable,
@@ -1479,7 +1495,7 @@ public class TripDetailsActivity extends OeffiActivity implements LocationListen
 
         final TableLayout stopsView = row.findViewById(R.id.directions_trip_details_public_entry_stops);
         stopsView.removeAllViews();
-        final CollapseColumns collapseColumns = new CollapseColumns(NetworkProviderFactory.provider(network).getTimeZone());
+        final CollapseColumns collapseColumns = new CollapseColumns(networkProvider.getTimeZone());
         // collapseColumns.dateChanged(now);
 
         final boolean preferPlanTime = renderConfig.isOperation;
@@ -1595,7 +1611,7 @@ public class TripDetailsActivity extends OeffiActivity implements LocationListen
                 final View collapsedIntermediateStopsRow = collapsedIntermediateStopsRow(
                         leg.getArrivalTime().getTime() - leg.getDepartureTime().getTime(),
                         numIntermediateStopsWithStopTime,
-                        leg.line.style);
+                        line.style);
                 stopsView.addView(collapsedIntermediateStopsRow);
                 if (numIntermediateStopsWithStopTime > 0) {
                     collapsedIntermediateStopsRow.setOnClickListener(v -> {
@@ -1609,7 +1625,7 @@ public class TripDetailsActivity extends OeffiActivity implements LocationListen
         } else {
             final View collapsedIntermediateStopsRow = collapsedIntermediateStopsRow(
                     leg.getArrivalTime().getTime() - leg.getDepartureTime().getTime(),
-                    0, leg.line.style);
+                    0, line.style);
             stopsView.addView(collapsedIntermediateStopsRow);
         }
 
@@ -2523,20 +2539,19 @@ public class TripDetailsActivity extends OeffiActivity implements LocationListen
             }
         }
 
-        final boolean isEntryOrExit =
-                ((
-                    leg.entryLocation != null &&
-                    location.id.equals(leg.entryLocation.id) &&
-                    stop.plannedDepartureTime != null &&
-                    (leg.entryTime == null || stop.plannedDepartureTime.getTime() == leg.entryTime.getTime())
-                ) || (
+        final boolean isEntry =
+                pearlType != PearlView.Type.ARRIVAL_FOR_INTERMEDIATE_DEPARTURE &&
+                        leg.entryLocation != null &&
+                        location.id.equals(leg.entryLocation.id) &&
+                        stop.plannedDepartureTime != null &&
+                        (leg.entryTime == null || stop.plannedDepartureTime.getTime() == leg.entryTime.getTime());
+        final boolean isExit =
+                pearlType != PearlView.Type.DEPARTURE_FOR_INTERMEDIATE_ARRIVAL &&
                     leg.exitLocation != null &&
                     location.id.equals(leg.exitLocation.id) &&
                     stop.plannedArrivalTime != null &&
-                    (leg.exitTime == null || stop.plannedArrivalTime.getTime() == leg.exitTime.getTime())
-                ))
-                && !(pearlType == PearlView.Type.DEPARTURE_FOR_INTERMEDIATE_ARRIVAL
-                    || pearlType == PearlView.Type.ARRIVAL_FOR_INTERMEDIATE_DEPARTURE);
+                    (leg.exitTime == null || stop.plannedArrivalTime.getTime() == leg.exitTime.getTime());
+        final boolean isEntryOrExit = isEntry || isExit;
 
         if (pearlType == PearlView.Type.DEPARTURE
                 || pearlType == PearlView.Type.INTERMEDIATE_DEPARTURE
@@ -2629,6 +2644,15 @@ public class TripDetailsActivity extends OeffiActivity implements LocationListen
         }
         stopNameView.setOnClickListener(null);
         stopNameView.setOnLongClickListener(null);
+
+//        if (mayHaveVehicleInformation && (renderConfig.isJourney ? isEntry : pearlType == PearlView.Type.DEPARTURE)) {
+//            final View symbolView = row.findViewById(R.id.directions_trip_details_public_entry_vehicle_information_symbol);
+//            symbolView.setVisibility(View.VISIBLE);
+//            symbolView.setOnClickListener(v -> loadAndShowVehicleInformation(leg.journeyRef, stop));
+//            row.findViewById(R.id.directions_trip_details_public_entry_vehicle_information_click)
+//                    .setOnClickListener(v -> loadAndShowVehicleInformation(leg.journeyRef, stop));
+//        }
+
         if (location.hasId()) {
             boolean stopIsLegDeparture = false;
             boolean stopIsLegArrival = false;
@@ -3115,7 +3139,7 @@ public class TripDetailsActivity extends OeffiActivity implements LocationListen
                             currentJourneyRef, feederJourneyRef, connectionJourneyRef,
                             renderConfig.queryTripsRequestData, null);
                 } else if (menuItemId == R.id.station_context_infopage) {
-                    final String infoUrl = NetworkProviderFactory.provider(network).getLocationInfoUrl(stop.location);
+                    final String infoUrl = networkProvider.getLocationInfoUrl(stop.location);
                     if (infoUrl != null) {
                         @SuppressLint("UnsafeImplicitIntentLaunch")
                         final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(infoUrl));
@@ -3310,16 +3334,15 @@ public class TripDetailsActivity extends OeffiActivity implements LocationListen
 
     public String getTripLinkUrl(final Context context, final NetworkId network, final Trip trip) {
         try {
-            final NetworkProvider provider = NetworkProviderFactory.provider(network);
-            if (provider.hasCapabilities(NetworkProvider.Capability.TRIP_SHARING)) {
-                final TripShare tripShare = provider.shareTrip(trip);
+            if (networkProvider.hasCapabilities(NetworkProvider.Capability.TRIP_SHARING)) {
+                final TripShare tripShare = networkProvider.shareTrip(trip);
                 final MessageBufferPacker packer = MessagePack.newDefaultBufferPacker();
                 tripShare.packToMessage(packer);
                 packer.close();
                 final String stringifiedTripShare = Objects.compressToString(packer.toByteArray());
                 return AppLinkActivity.getNetworkLinkUrl(context, network,
                         DirectionsActivity.LINK_IDENTIFIER_SHARE_TRIP, stringifiedTripShare).toString();
-            } else if (provider.hasCapabilities(NetworkProvider.Capability.TRIP_RELOAD)) {
+            } else if (networkProvider.hasCapabilities(NetworkProvider.Capability.TRIP_RELOAD)) {
                 // final String stringifiedTripRef Objects.serializeAndCompressToString(tripRef);
                 final MessageBufferPacker packer = MessagePack.newDefaultBufferPacker();
                 trip.tripRef.packToMessage(packer);
@@ -3539,5 +3562,25 @@ public class TripDetailsActivity extends OeffiActivity implements LocationListen
                 getReturnHereIntent(),
                 Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         return true;
+    }
+
+    private void loadAndShowVehicleInformation(final JourneyRef journeyRef, final Stop stop) {
+        backgroundHandler.post(() -> {
+            try {
+                final QueryVehicleInformationResult result =
+                        networkProvider.queryVehicleInformation(journeyRef, stop);
+                if (result.status == QueryVehicleInformationResult.Status.OK) {
+                    runOnUiThread(() -> showVehicleInformation(result.vehicleInformation));
+                    return;
+                }
+            } catch (final IOException e) {
+                // ...
+            }
+            runOnUiThread(() -> new Toast(this).longToast(
+                    R.string.directions_trip_details_vehicle_information_error) );
+        });
+    }
+
+    private void showVehicleInformation(final VehicleInformation vehicleInformation) {
     }
 }
