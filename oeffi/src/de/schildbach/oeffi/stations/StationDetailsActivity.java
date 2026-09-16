@@ -476,15 +476,29 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
         updateFragments();
     }
 
-    private void setShowArrivals(final boolean newShowArrivals) {
-        if (NetworkProviderFactory.provider(selectedNetwork).hasCapabilities(
-                newShowArrivals ? NetworkProvider.Capability.ARRIVALS : NetworkProvider.Capability.DEPARTURES)) {
+    private void setShowArrivals(final boolean desiredShowArrivals) {
+        final boolean newShowArrivals;
+        final NetworkProvider networkProvider = NetworkProviderFactory.provider(selectedNetwork);
+        if (networkProvider.hasCapabilities(
+                desiredShowArrivals ? NetworkProvider.Capability.ARRIVALS : NetworkProvider.Capability.DEPARTURES)) {
+            newShowArrivals = desiredShowArrivals;
+        } else  {
+            newShowArrivals = !desiredShowArrivals;
+        }
+
+        if (newShowArrivals != showArrivals) {
             showArrivals = newShowArrivals;
             actionBar.setPrimaryTitle(showArrivals
                     ? R.string.station_details_activity_arrivals_short_title
                     : R.string.station_details_activity_departures_short_title);
-            showArrivalsButton.setChecked(showArrivals);
             requestRefresh();
+        }
+
+        if (!networkProvider.hasCapabilities(
+                NetworkProvider.Capability.ARRIVALS, NetworkProvider.Capability.DEPARTURES)) {
+            showArrivalsButton.setVisibility(View.GONE);
+        } else {
+            showArrivalsButton.setChecked(showArrivals);
         }
     }
 
@@ -835,6 +849,7 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
             getMapView().animateToLocation(selectedCoord.getLatAsDouble(), selectedCoord.getLonAsDouble());
         }
 
+        setShowArrivals(showArrivals);
         updateGUI();
 
         // actionBar.setPrimaryTitle(selectedStation.name);
