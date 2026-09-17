@@ -65,6 +65,7 @@ import de.schildbach.oeffi.util.HtmlUtils;
 import de.schildbach.oeffi.util.LineView;
 import de.schildbach.oeffi.util.Objects;
 import de.schildbach.oeffi.util.OverflowTextView;
+import de.schildbach.oeffi.util.Toast;
 import de.schildbach.oeffi.util.ToggleImageButton;
 import de.schildbach.oeffi.util.ViewUtils;
 import de.schildbach.pte.NetworkId;
@@ -239,7 +240,6 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
         setPrimaryColor(R.color.bg_action_bar_stations);
         actionBar.setBack(isTaskRoot() ? null : v -> finish());
         actionBar.setPrimaryTitle(R.string.station_details_activity_departures_short_title);
-        actionBar.setTitlesOnClickListener(v -> setShowArrivals(!showArrivals));
         // actionBar.swapTitles();
         actionBar.addProgressButton().setOnClickListener(v -> requestRefresh());
         nearbyButton = actionBar.addButton(R.drawable.ic_radar_white_24dp, R.string.stations_station_details_action_explore_nearby_title);
@@ -269,7 +269,6 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
         });
         showArrivalsButton = actionBar.addToggleButton(R.drawable.ic_arrival_departure_white_24dp,
                 R.string.stations_station_details_action_show_arrivals_title);
-        showArrivalsButton.setOnCheckedChangeListener((buttonView, isChecked) -> setShowArrivals(isChecked));
         actionBar.addButtonSplit();
         hideCancelledDeparturesButton = actionBar.addToggleButton(R.drawable.ic_cancelled_toggle_24dp,
                 R.string.stations_station_details_action_cancelled_title);
@@ -494,11 +493,22 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
             requestRefresh();
         }
 
+        showArrivalsButton.setChecked(showArrivals);
+
         if (!networkProvider.hasCapabilities(
                 NetworkProvider.Capability.ARRIVALS, NetworkProvider.Capability.DEPARTURES)) {
-            showArrivalsButton.setVisibility(View.GONE);
+            showArrivalsButton.setAlpha(0.5f);
+            showArrivalsButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                new Toast(this).toast(R.string.not_supported);
+                showArrivalsButton.setChecked(showArrivals);
+            });
+            actionBar.setTitlesOnClickListener(null);
         } else {
-            showArrivalsButton.setChecked(showArrivals);
+            showArrivalsButton.setAlpha(1.0f);
+            showArrivalsButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                    setShowArrivals(isChecked);
+            });
+            actionBar.setTitlesOnClickListener(v -> setShowArrivals(!showArrivals));
         }
     }
 

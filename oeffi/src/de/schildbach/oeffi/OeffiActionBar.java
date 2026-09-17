@@ -242,6 +242,7 @@ public class OeffiActionBar extends FrameLayout implements View.OnLayoutChangeLi
         if (titlesGroup != null) {
             titlesGroup.setOnClickListener(listener);
             titlesGroup.setFocusable(listener != null);
+            titlesGroup.setClickable(listener != null);
         }
     }
 
