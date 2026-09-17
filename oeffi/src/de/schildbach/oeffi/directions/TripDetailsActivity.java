@@ -57,10 +57,14 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.webkit.MimeTypeMap;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.Space;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -93,6 +97,7 @@ import de.schildbach.oeffi.tripeval.TripGeoUtils;
 import de.schildbach.oeffi.util.DialogBuilder;
 import de.schildbach.oeffi.util.ExternalMapsUtils;
 import de.schildbach.oeffi.util.HorizontalPager;
+import de.schildbach.oeffi.util.VehicleInformationRenderer;
 import de.schildbach.oeffi.util.geofiles.GeoFileProducer;
 import de.schildbach.oeffi.util.geofiles.GpxProducer;
 import de.schildbach.oeffi.util.geofiles.KmlProducer;
@@ -1345,7 +1350,9 @@ public class TripDetailsActivity extends OeffiActivity implements LocationListen
             final TripRenderer.LegContainer walkLegC,
             final TripRenderer.LegContainer nextLegC,
             final Date now) {
-        hasVehicleInformationCapability = networkProvider.hasCapabilities(NetworkProvider.Capability.VEHICLE_INFORMATION);
+        hasVehicleInformationCapability =
+                application.isDeveloperElementsEnabled() &&
+                networkProvider.hasCapabilities(NetworkProvider.Capability.VEHICLE_INFORMATION);
 
         final TripRenderer.LegContainer nearestPublicLeg = tripRenderer.nearestPublicLeg;
         final boolean isHighlightedLeg = nearestPublicLeg == legC;
@@ -3582,5 +3589,14 @@ public class TripDetailsActivity extends OeffiActivity implements LocationListen
     }
 
     private void showVehicleInformation(final VehicleInformation vehicleInformation) {
+        final WebView webView = new WebView(this);
+        final String html = new VehicleInformationRenderer(vehicleInformation).getHtml();
+        webView.loadData(html, "text/html", "utf-8");
+        final NestedScrollView scrollView = new NestedScrollView(this);
+        scrollView.addView(webView);
+        DialogBuilder.get(this)
+                .setView(scrollView)
+                .setCanceledOnTouchOutside(true)
+                .show();
     }
 }
