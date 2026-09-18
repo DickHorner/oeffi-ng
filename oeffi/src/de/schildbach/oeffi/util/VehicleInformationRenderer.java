@@ -1,10 +1,38 @@
+/*
+ * Copyright the original author or authors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.schildbach.oeffi.util;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.text.SpannableStringBuilder;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import de.schildbach.oeffi.R;
 import de.schildbach.pte.dto.VehicleInformation;
 
 public class VehicleInformationRenderer {
@@ -27,6 +55,41 @@ public class VehicleInformationRenderer {
         boolean vehicleEnd;
         VehicleInformation.PlatformSection platformSection;
         VehicleInformation.VehicleData vehicleData;
+    }
+
+    public void showVehicleInformationDialog(final Context context, final Runnable onDismissHandler) {
+        final String html = new VehicleInformationRenderer(vehicleInformation).getHtml();
+
+        final DialogBuilder dialogBuilder = DialogBuilder.get(context, R.layout.vehicle_information);
+        final View contentView = dialogBuilder.getView();
+
+        final WebView webView = contentView.findViewById(R.id.vehicle_information_webview);
+        webView.setWebViewClient(new WebViewClient());
+        final WebSettings settings = webView.getSettings();
+        settings.setUseWideViewPort(true);
+        webView.loadDataWithBaseURL(null, html, "text/html", "utf-8", null);
+
+        final TextView positionView = contentView.findViewById(R.id.vehicle_information_position);
+        if (vehicleInformation.platform == null || vehicleInformation.platform.name == null) {
+            positionView.setVisibility(View.GONE);
+        } else {
+            final String platformName = vehicleInformation.platform.name;
+            final SpannableStringBuilder positionStr = new SpannableStringBuilder(
+                    Formats.makeBreakablePositionName(platformName)
+                            .replace('\u200B', '\n'));
+            positionView.setText(positionStr);
+        }
+
+        final AlertDialog dialog = dialogBuilder
+                .setCanceledOnTouchOutside(true)
+                .setOnDismissListener(d -> onDismissHandler.run())
+                .show();
+        final Window window = dialog.getWindow();
+        if (window != null) {
+            window.setLayout(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    (int) (context.getResources().getDisplayMetrics().heightPixels * 0.75));
+        }
     }
 
     private void render() {
@@ -137,7 +200,7 @@ public class VehicleInformationRenderer {
         builder.append("table { border-collapse: collapse; margin-top: 2em; }\n");
         builder.append("td { }\n");
         builder.append("td.gap { }\n");
-        builder.append("td.meters { text-align: center; vertical-align: top; }\n");
+        builder.append("td.meters { text-align: center; vertical-align: top; padding-left: 2px; padding-right: 4px; }\n");
         builder.append("td.vehicle { padding: 3px; border-bottom: 1px solid; border-left: 3px solid; border-right: 3px solid; background-color: #f0f0f0; text-color: #000000; }\n");
         builder.append("td.vehicle.groupHead { border-top: 3px solid; }\n");
         builder.append("td.vehicle.groupTail { border-bottom: 3px solid; }\n");

@@ -475,6 +475,8 @@
     <string name="directions_trip_details_public_entry_accessibility">Section is barrier free.</string>
     <string name="directions_trip_details_public_entry_bicycle_carriage">Bikes might be carried.</string>
     <string name="directions_trip_details_public_entry_vehicle_information_available">Vehicle information may be available.</string>
+    <string name="directions_trip_details_vehicle_information_title">Vehicle Information</string>
+    <string name="directions_trip_details_vehicle_information_direction">Departure direction</string>
     <string name="directions_trip_details_time_left_minutes">&lt;b>%1$d minutes&lt;/b> left</string>
     <string name="directions_trip_details_time_left_hours">&lt;b>%1$d hours&lt;/b> left</string>
     <string name="directions_trip_details_time_left_days">&lt;b>%1$d days&lt;/b> left</string>
@@ -670,6 +672,7 @@
     <!-- position -->
     <string name="position_platform_train">platform %s</string>
     <string name="position_platform">platform %s</string>
+    <string name="platform_label">Platform:</string>
 
     <!-- install app -->
     <string name="app_installer_download_progress_message">Downloading package …</string>

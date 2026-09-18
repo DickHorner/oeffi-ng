@@ -474,6 +474,8 @@
     <string name="directions_trip_details_public_entry_accessibility">Abschnitt ist barrierefrei</string>
     <string name="directions_trip_details_public_entry_bicycle_carriage">Fahrradmitnahme ggf. möglich</string>
     <string name="directions_trip_details_public_entry_vehicle_information_available">Wagenreihung ggf. verfügbar</string>
+    <string name="directions_trip_details_vehicle_information_title">Wagenreihung</string>
+    <string name="directions_trip_details_vehicle_information_direction">Fahrtrichtung</string>
     <string name="directions_trip_details_time_left_minutes">Noch &lt;b>%1$d Minuten&lt;/b></string>
     <string name="directions_trip_details_time_left_hours">Noch &lt;b>%1$d Stunden&lt;/b></string>
     <string name="directions_trip_details_time_left_days">Noch &lt;b>%1$d Tage&lt;/b></string>
@@ -669,6 +671,7 @@
     <!-- position -->
     <string name="position_platform_train">Gleis %s</string>
     <string name="position_platform">Steig %s</string>
+    <string name="platform_label">Steig:</string>
 
     <!-- install app -->
     <string name="app_installer_download_progress_message">App wird heruntergeladen …</string>

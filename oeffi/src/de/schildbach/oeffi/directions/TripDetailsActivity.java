@@ -3585,7 +3585,12 @@ public class TripDetailsActivity extends OeffiActivity implements LocationListen
                 final QueryVehicleInformationResult result =
                         networkProvider.queryVehicleInformation(journeyRef, stop);
                 if (result.status == QueryVehicleInformationResult.Status.OK) {
-                    runOnUiThread(() -> showVehicleInformation(result.vehicleInformation));
+                    runOnUiThread(() -> {
+                        new VehicleInformationRenderer(result.vehicleInformation)
+                                .showVehicleInformationDialog(this, () -> {
+                                        isVehicleInformationShowing = false;
+                                });
+                    });
                     return;
                 }
             } catch (final IOException e) {
@@ -3595,25 +3600,5 @@ public class TripDetailsActivity extends OeffiActivity implements LocationListen
             runOnUiThread(() -> new Toast(this).longToast(
                     R.string.directions_trip_details_vehicle_information_error) );
         });
-    }
-
-    private void showVehicleInformation(final VehicleInformation vehicleInformation) {
-        final WebView webView = new WebView(this);
-        webView.setWebViewClient(new WebViewClient());
-        final String html = new VehicleInformationRenderer(vehicleInformation).getHtml();
-        webView.loadDataWithBaseURL(null, html, "text/html", "utf-8", null);
-        final AlertDialog dialog = DialogBuilder.get(this)
-                .setView(webView)
-                .setCanceledOnTouchOutside(true)
-                .setOnDismissListener(d -> {
-                    isVehicleInformationShowing = false;
-                })
-                .show();
-        final Window window = dialog.getWindow();
-        if (window != null) {
-            window.setLayout(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    (int) (getResources().getDisplayMetrics().heightPixels * 0.75));
-        }
     }
 }
