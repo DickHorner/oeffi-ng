@@ -133,9 +133,16 @@ public class VehicleInformationRenderer {
 
         builder.append("<html>");
         builder.append("<head>");
-        builder.append("<style>");
-        builder.append("table { border-collapse: collapse; }");
-        builder.append("tr, td { border: 1px solid; }");
+        builder.append("<style>\n");
+        builder.append("table { border-collapse: collapse; margin-top: 2em; }\n");
+        builder.append("td { }\n");
+        builder.append("td.gap { }\n");
+        builder.append("td.meters { text-align: center; vertical-align: top; }\n");
+        builder.append("td.vehicle { padding: 3px; border-bottom: 1px solid; border-left: 3px solid; border-right: 3px solid; background-color: #f0f0f0; text-color: #000000; }\n");
+        builder.append("td.vehicle.groupHead { border-top: 3px solid; }\n");
+        builder.append("td.vehicle.groupTail { border-bottom: 3px solid; }\n");
+        builder.append("td.section { padding: 5px; border: 3px solid; background-color: #2020ff; color: #ffffff; font-weight: bold; }\n");
+        builder.append("div.metersvalue { position: relative; top: -0.8em; }\n");
         builder.append("</style>");
         builder.append("</head>");
         builder.append("<body>");
@@ -145,109 +152,38 @@ public class VehicleInformationRenderer {
         int nextVehicleIndex = findNext(list, -1, true);
 
         entry = list.get(0);
+        addTableRowStart();
         if (nextPlatformSectionIndex == 0) {
             nextPlatformSectionIndex = findNext(list, 0, false);
-            addTableRowStart();
-            addTableData(null, 1);
+            addTableDataPlatform(entry.platformSection, nextPlatformSectionIndex);
             addTableDataMeters(entry.fromMeters);
-            addTableDataVehicle(null, nextVehicleIndex + 1);
-            addTableRowEnd();
-            addTableRowStart();
-            addTableDataPlatform(entry.platformSection, nextPlatformSectionIndex + 1);
-            addTableRowEnd();
+            addTableDataVehicle(null, nextVehicleIndex);
         } else {
             nextVehicleIndex = findNext(list, 0, true);
-            addTableRowStart();
-            addTableDataPlatform(null, nextPlatformSectionIndex + 1);
+            addTableDataPlatform(null, nextPlatformSectionIndex);
             addTableDataMeters(entry.fromMeters);
-            addTableDataVehicle(null, 1);
-            addTableRowEnd();
-            addTableRowStart();
-            addTableDataVehicle(entry.vehicleData, nextVehicleIndex + 1);
-            addTableRowEnd();
+            addTableDataVehicle(entry.vehicleData, nextVehicleIndex);
         }
+        addTableRowEnd();
 
         for (int i = 1, listSize = list.size(); i < listSize; i++) {
             entry = list.get(i);
+            addTableRowStart();
             if (i == nextPlatformSectionIndex) {
                 nextPlatformSectionIndex = findNext(list, i, false);
-                addTableRowStart();
+                addTableDataPlatform(entry.platformSection, nextPlatformSectionIndex - i);
                 addTableDataMeters(entry.fromMeters);
-                addTableRowEnd();
-                addTableRowStart();
-                addTableDataPlatform(entry.platformSection, nextPlatformSectionIndex - i + 2);
-                addTableRowEnd();
             } else {
                 nextVehicleIndex = findNext(list, i, true);
-                addTableRowStart();
                 addTableDataMeters(entry.fromMeters);
-                addTableRowEnd();
-                addTableRowStart();
-                addTableDataVehicle(entry.vehicleData, nextVehicleIndex - i + 2);
-                addTableRowEnd();
+                addTableDataVehicle(entry.vehicleData, nextVehicleIndex - i);
             }
+            addTableRowEnd();
         }
 
         builder.append("</table>");
         builder.append("</body>");
         builder.append("</html>");
-    }
-
-    private void addTableRowStart() {
-        builder.append("<tr>");
-    }
-
-    private void addTableRowEnd() {
-        builder.append("</tr>");
-    }
-
-    private void addTableDataStart(final int span) {
-        if (span > 1) {
-            builder.append("<td rowspan=\"");
-            builder.append(span);
-            builder.append("\">");
-        } else {
-            builder.append("<td>");
-        }
-    }
-
-    private void addTableDataEnd() {
-        builder.append("</td>");
-    }
-
-    private void addTableData(final String data, final int span) {
-        addTableDataStart(span);
-        if (data != null)
-            builder.append(data);
-        addTableDataEnd();
-    }
-
-    @SuppressLint("DefaultLocale")
-    private void addTableDataMeters(final double meters) {
-        addTableData(String.format("%.0f", Math.abs(meters)), 2);
-    }
-
-    private void addTableDataPlatform(final VehicleInformation.PlatformSection platformSection, final int span) {
-        if (platformSection == null) {
-            addTableData(null, span + 2);
-            return;
-        }
-        addTableDataStart(span + 2);
-        builder.append(platformSection.name);
-        addTableDataEnd();
-    }
-
-    private void addTableDataVehicle(final VehicleInformation.VehicleData vehicleData, final int span) {
-        if (vehicleData == null) {
-            addTableData(null, span + 2);
-            return;
-        }
-        addTableDataStart(span + 2);
-        builder.append("vehicle ");
-        builder.append(vehicleData.group.indexInFormation);
-        builder.append("-");
-        builder.append(vehicleData.indexInGroup);
-        addTableDataEnd();
     }
 
     private static int findNext(final List<Entry> list, final int consumedStartIndex, final boolean vehicle) {
@@ -260,4 +196,100 @@ public class VehicleInformationRenderer {
         return list.size();
     }
 
+    private void addTableRowStart() {
+        builder.append("<tr>");
+    }
+
+    private void addTableRowEnd() {
+        builder.append("</tr>");
+    }
+
+    private void addTableDataStart(final int span, final String... cssClasses) {
+        builder.append("<td rowspan=\"");
+        builder.append(span);
+        if (cssClasses != null) {
+            builder.append("\" class=\"");
+            for (final String cssClass : cssClasses) {
+                if (cssClass != null) {
+                    builder.append(cssClass);
+                    builder.append(" ");
+                }
+            }
+        }
+        builder.append("\">");
+    }
+
+    private void addTableDataEnd() {
+        builder.append("</td>");
+    }
+
+    private void addTableData(final String data, final int span, final String... cssClass) {
+        addTableDataStart(span, cssClass);
+        if (data != null)
+            builder.append(data);
+        addTableDataEnd();
+    }
+
+    @SuppressLint("DefaultLocale")
+    private void addTableDataMeters(final double meters) {
+        addTableData(String.format("<div class=\"metersvalue\">%.0f</div>", Math.abs(meters)), 1, "meters");
+    }
+
+    private void addTableDataPlatform(final VehicleInformation.PlatformSection platformSection, final int span) {
+        if (platformSection == null) {
+            addTableData(null, span, "gap");
+            return;
+        }
+        addTableDataStart(span, "section");
+        builder.append(platformSection.name);
+        addTableDataEnd();
+    }
+
+    private void addTableDataVehicle(final VehicleInformation.VehicleData vehicleData, final int span) {
+        if (vehicleData == null) {
+            addTableData(null, span, "gap");
+            return;
+        }
+        addTableDataStart(span, "vehicle",
+                vehicleData.indexInGroup == 0 ? "groupHead" : null,
+                vehicleData.indexInGroup == vehicleData.group.vehicles.size() - 1 ? "groupTail" : null);
+//        builder.append("vehicle ");
+//        builder.append(vehicleData.group.indexInFormation);
+//        builder.append("-");
+//        builder.append(vehicleData.indexInGroup);
+        if (vehicleData.wagonLabel != null) {
+            builder.append("<div><b>");
+            builder.append(vehicleData.wagonLabel);
+            builder.append("</b></div>");
+        }
+        if (vehicleData.vehicleIdentification != null) {
+            builder.append("<div><i>");
+            builder.append(vehicleData.vehicleIdentification);
+            builder.append("</i></div>");
+        }
+        if (vehicleData.bicycleSpaces != null) {
+            builder.append("<div> ");
+            // builder.append("&#x1F6B2;&#xFE0E;"); bicycle character with black rendering modifier -- doesn't work
+            builder.append("<svg width=\"24\" height=\"24\" viewBox=\"0 -960 960 960\" fill=\"black\">" +
+                    "<path d=\"M200-160q-85 0-142.5-57.5T0-360q0-85 58.5-142.5T200-560q77 0 129.5 46T396-400h26l-72-200h-30q-17 0-28.5-11.5T280-640q0-17 11.5-28.5T320-680h120q17 0 28.5 11.5T480-640q0 17-11.5 28.5T440-600h-4l14 40h192l-58-160h-64q-17 0-28.5-11.5T480-760q0-17 11.5-28.5T520-800h64q26 0 46.5 14t29.5 38l68 186h32q83 0 141.5 58.5T960-362q0 84-58 143t-142 59q-72 0-126.5-45T564-320H396q-14 69-68 114.5T200-160Zm0-80q41 0 70.5-22.5T312-320h-72q-17 0-28.5-11.5T200-360q0-17 11.5-28.5T240-400h72q-12-36-41.5-58T200-480q-51 0-85.5 34.5T80-360q0 50 34.5 85t85.5 35Zm308-160h56q5-23 13.5-43t22.5-37H478l30 80Zm252 160q51 0 85.5-35t34.5-85q0-51-34.5-85.5T760-480h-4l26 69q6 16-1 30.5T758-360q-16 6-31-1t-21-23l-24-68q-20 17-31 40t-11 52q0 50 34.5 85t85.5 35ZM196-360Zm564 0Z\"/>" +
+                    "</svg>");
+            builder.append(" ");
+            builder.append(vehicleData.bicycleSpaces.available);
+            builder.append(" / ");
+            builder.append(vehicleData.bicycleSpaces.total);
+            builder.append("</div>");
+        }
+//        vehicleData.firstClass;
+//        vehicleData.economyClass;
+//        vehicleData.infoZone;
+//        vehicleData.valuedCustomer;
+//        vehicleData.childrenSpace;
+//        vehicleData.familyZone;
+//        vehicleData.quietZone;
+//        vehicleData.seatsForDisabled;
+//        vehicleData.toiletForWheelChair;
+//        vehicleData.airCondition;
+//        vehicleData.wheelChairSpaces;
+        addTableDataEnd();
+    }
 }

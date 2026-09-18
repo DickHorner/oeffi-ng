@@ -20,6 +20,7 @@ package de.schildbach.oeffi.directions;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -56,15 +57,14 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
-import android.webkit.MimeTypeMap;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.Space;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -1363,8 +1363,10 @@ public class TripDetailsActivity extends OeffiActivity implements LocationListen
         final Location destinationLocation = destination == null ? null : destination.location;
         final String destinationName = Formats.fullLocationName(destinationLocation);
         final boolean showDestination = destinationName != null;
+        final JourneyRef journeyRef = leg.journeyRef;
         final Line line = leg.line;
-        final boolean mayHaveVehicleInformation = hasVehicleInformationCapability && networkProvider.mayProvideVehicleInformation(line);
+        final boolean mayHaveVehicleInformation = hasVehicleInformationCapability &&
+                networkProvider.mayProvideVehicleInformation(journeyRef, line);
         final boolean showAccessibility = line.hasAttr(Line.Attr.WHEEL_CHAIR_ACCESS)
                 && !NetworkProvider.Accessibility.NEUTRAL.equals(application.prefsGetAccessibility());
         final boolean showBicycleCarriage = line.hasAttr(Line.Attr.BICYCLE_CARRIAGE)
@@ -1464,16 +1466,16 @@ public class TripDetailsActivity extends OeffiActivity implements LocationListen
         ViewUtils.setVisibility(vehicleInformationAvailableView, mayHaveVehicleInformation);
         if (mayHaveVehicleInformation) {
             final View vehicleInformationClickView = row.findViewById(R.id.directions_trip_details_public_entry_vehicle_information_click);
-            vehicleInformationClickView.setOnClickListener(v -> loadAndShowVehicleInformation(leg.journeyRef, leg.departureStop));
+            vehicleInformationClickView.setOnClickListener(v -> loadAndShowVehicleInformation(journeyRef, leg.departureStop));
         }
 
-        if (!renderConfig.isJourney && leg.journeyRef != null
+        if (!renderConfig.isJourney && journeyRef != null
                 && networkProvider.hasCapabilities(NetworkProvider.Capability.JOURNEY)) {
             final View.OnClickListener onClickListener = clickedView -> {
                 queryJourneyRunnable = QueryJourneyRunnable.startShowJourney(
                         this, clickedView, queryJourneyRunnable,
                         handler, backgroundHandler,
-                        network, leg.journeyRef, false,
+                        network, journeyRef, false,
                         leg.departureStop.location, leg.departureStop.plannedDepartureTime,
                         leg.arrivalStop.location, leg.arrivalStop.plannedArrivalTime,
                         true,
@@ -3571,7 +3573,13 @@ public class TripDetailsActivity extends OeffiActivity implements LocationListen
         return true;
     }
 
+    private boolean isVehicleInformationShowing;
+
     private void loadAndShowVehicleInformation(final JourneyRef journeyRef, final Stop stop) {
+        if (isVehicleInformationShowing)
+            return;
+        isVehicleInformationShowing = true;
+
         backgroundHandler.post(() -> {
             try {
                 final QueryVehicleInformationResult result =
@@ -3583,6 +3591,7 @@ public class TripDetailsActivity extends OeffiActivity implements LocationListen
             } catch (final IOException e) {
                 // ...
             }
+            isVehicleInformationShowing = false;
             runOnUiThread(() -> new Toast(this).longToast(
                     R.string.directions_trip_details_vehicle_information_error) );
         });
@@ -3590,13 +3599,21 @@ public class TripDetailsActivity extends OeffiActivity implements LocationListen
 
     private void showVehicleInformation(final VehicleInformation vehicleInformation) {
         final WebView webView = new WebView(this);
+        webView.setWebViewClient(new WebViewClient());
         final String html = new VehicleInformationRenderer(vehicleInformation).getHtml();
-        webView.loadData(html, "text/html", "utf-8");
-        final NestedScrollView scrollView = new NestedScrollView(this);
-        scrollView.addView(webView);
-        DialogBuilder.get(this)
-                .setView(scrollView)
+        webView.loadDataWithBaseURL(null, html, "text/html", "utf-8", null);
+        final AlertDialog dialog = DialogBuilder.get(this)
+                .setView(webView)
                 .setCanceledOnTouchOutside(true)
+                .setOnDismissListener(d -> {
+                    isVehicleInformationShowing = false;
+                })
                 .show();
+        final Window window = dialog.getWindow();
+        if (window != null) {
+            window.setLayout(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    (int) (getResources().getDisplayMetrics().heightPixels * 0.75));
+        }
     }
 }
