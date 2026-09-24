@@ -90,6 +90,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -170,6 +171,7 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
     private NetworkId selectedNetwork;
     private Location selectedLocation;
     private Station selectedStation;
+    private List<Location> selectedStationPositions = Collections.emptyList();
     private CombinedStation selectedCombinedStation;
     private Location selectedCoord;
     private final Set<Product> products = new HashSet<>(Product.ALL_SELECTABLE);
@@ -777,6 +779,11 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
         return stations;
     }
 
+    @Override
+    public List<Location> getStationPositions() {
+        return selectedStationPositions;
+    }
+
     public Integer getFavoriteState(final String stationId) {
         throw new UnsupportedOperationException();
     }
@@ -787,6 +794,30 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
             viewAnimator.setDisplayedChild(1);
             resultStatusView.setText(message);
         }
+    }
+
+    private boolean supportsVbbStopPositions(final NetworkId network) {
+        return network == NetworkId.BVG || network == NetworkId.BVGLEGACY || network == NetworkId.VBB;
+    }
+
+    private void loadSelectedStationPositions(final Station station) {
+        selectedStationPositions = Collections.emptyList();
+        getMapView().invalidate();
+
+        if (station.location.id == null || !supportsVbbStopPositions(station.network))
+            return;
+
+        final String stationId = station.location.id;
+        backgroundHandler.post(() -> {
+            final List<Location> positions = VbbStopPositions.load(this, stationId);
+            runOnUiThread(() -> {
+                if (selectedLocation == null || !stationId.equals(selectedLocation.id))
+                    return;
+
+                selectedStationPositions = positions;
+                getMapView().invalidate();
+            });
+        });
     }
 
     public void selectStation(final Station aStation) {
@@ -825,6 +856,7 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
         selectedStation = station;
         selectedNetwork = station.network;
         selectedLocation = station.location;
+        loadSelectedStationPositions(station);
         selectedCombinedStation = combinedStation;
         selectedCoord = selectedLocation.hasCoord() ? selectedLocation : null;
         selectedAllDepartures = new ArrayList<>();
