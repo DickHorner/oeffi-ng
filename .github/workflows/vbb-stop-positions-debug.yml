@@ -29,7 +29,9 @@ jobs:
 
       - name: Test and build debug APK
         working-directory: androidstudio
-        run: bash ./gradlew :oeffi-studio:testNgDebugUnitTest :oeffi-studio:assembleNgDebug --stacktrace
+        run: |
+          bash ./gradlew :oeffi-studio:testNgDebugUnitTest --tests de.schildbach.oeffi.stations.VbbStopPositionsTest --stacktrace
+          bash ./gradlew :oeffi-studio:assembleNgDebug --stacktrace
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
