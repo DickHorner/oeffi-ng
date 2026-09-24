@@ -6,6 +6,9 @@ on:
       - feature/vbb-stop-positions
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -31,8 +34,8 @@ jobs:
           log-accepted-android-sdk-licenses: false
           packages: ''
 
-      - name: Install Android platform
-        run: sdkmanager "platform-tools" "platforms;android-37"
+      - name: Install Android SDK packages
+        run: sdkmanager "platform-tools" "build-tools;36.1.0" "platforms;android-37"
 
       - name: Build debug APK
         working-directory: androidstudio
