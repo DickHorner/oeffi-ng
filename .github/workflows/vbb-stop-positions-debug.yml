@@ -28,7 +28,7 @@ jobs:
           packages: ''
 
       - name: Install Android platform
-        run: sdkmanager "platforms;android-37"
+        run: sdkmanager --channel=3 "platforms;android-37"
 
       - name: Build debug APK
         working-directory: androidstudio
