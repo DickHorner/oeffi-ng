@@ -809,13 +809,41 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
 
         final String stationId = station.location.id;
         backgroundHandler.post(() -> {
-            final List<Location> positions = VbbStopPositions.load(this, stationId);
+            final List<Location> positions = VbbStopPositions.load(this, station.location);
             runOnUiThread(() -> {
                 if (selectedLocation == null || !stationId.equals(selectedLocation.id))
                     return;
 
                 selectedStationPositions = positions;
                 getMapView().invalidate();
+            });
+        });
+    }
+
+    private void showStationPositionOnMap(final Position position, final Product product) {
+        final Location station = selectedLocation;
+        if (station == null || !supportsVbbStopPositions(selectedNetwork))
+            return;
+
+        backgroundHandler.post(() -> {
+            final List<Location> positions = selectedStationPositions.isEmpty()
+                    ? VbbStopPositions.load(this, station)
+                    : selectedStationPositions;
+            final Location stationPosition = VbbStopPositions.find(positions, position, product);
+
+            runOnUiThread(() -> {
+                if (!station.equals(selectedLocation))
+                    return;
+
+                if (!positions.isEmpty()) {
+                    selectedStationPositions = positions;
+                    getMapView().invalidate();
+                }
+
+                if (stationPosition != null) {
+                    setMapVisible(true);
+                    getMapView().zoomToStations(List.of(stationPosition), 0);
+                }
             });
         });
     }
@@ -1248,8 +1276,12 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
                         position.equals(departure.plannedPosition)
                                 ? R.color.bg_position
                                 : R.color.bg_position_changed));
+                positionView.setOnClickListener(v -> context.showStationPositionOnMap(
+                        position, departure.line != null ? departure.line.product : null));
                 ViewUtils.setCancelledStrikeThru(positionView, isCancelled);
             } else {
+                positionView.setOnClickListener(null);
+                positionView.setClickable(false);
                 positionView.setVisibility(View.GONE);
             }
 

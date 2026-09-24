@@ -19,10 +19,15 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+
+import javax.annotation.Nullable;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.Point;
+import de.schildbach.pte.dto.Position;
+import de.schildbach.pte.dto.Product;
 
 final class VbbStopPositions {
     private static final Logger log = LoggerFactory.getLogger(VbbStopPositions.class);
@@ -31,7 +36,7 @@ final class VbbStopPositions {
     private VbbStopPositions() {
     }
 
-    static List<Location> load(final Context context, final String stationId) {
+    static List<Location> load(final Context context, final Location station) {
         final List<Location> positions = new ArrayList<>();
 
         try (final BufferedReader reader = new BufferedReader(new InputStreamReader(
@@ -44,7 +49,7 @@ final class VbbStopPositions {
                     continue;
 
                 final String[] fields = line.split("\\|", -1);
-                if (fields.length != 5 || !stationId.equals(fields[0]))
+                if (fields.length != 5 || !matchesStationId(station, fields[0]))
                     continue;
 
                 try {
@@ -61,5 +66,97 @@ final class VbbStopPositions {
         }
 
         return positions;
+    }
+
+    private static boolean matchesStationId(final Location station, final String parentId) {
+        return matchesStationId(parentId, station.id)
+                || matchesStationId(parentId, station.identityId)
+                || matchesStationId(parentId, station.displayId);
+    }
+
+    private static boolean matchesStationId(final String parentId, final @Nullable String stationId) {
+        if (stationId == null)
+            return false;
+        if (parentId.equals(stationId))
+            return true;
+
+        final int lastColon = stationId.lastIndexOf(':');
+        return lastColon >= 0 && parentId.equals(stationId.substring(lastColon + 1));
+    }
+
+    static @Nullable Location find(
+            final List<Location> positions, final Position position, final @Nullable Product product) {
+        final String positionKey = normalizePositionKey(position.toString());
+        Location typedMatch = null;
+        int typedMatches = 0;
+        Location anyMatch = null;
+        int anyMatches = 0;
+
+        for (final Location location : positions) {
+            if (location.name == null)
+                continue;
+            final String locationPositionKey = extractPositionKey(location.name);
+            if (!positionKey.equals(locationPositionKey))
+                continue;
+
+            anyMatch = location;
+            anyMatches++;
+            if (matchesProduct(location.name, product)) {
+                typedMatch = location;
+                typedMatches++;
+            }
+        }
+
+        if (typedMatches == 1)
+            return typedMatch;
+        if (anyMatches == 1)
+            return anyMatch;
+        return null;
+    }
+
+    private static String extractPositionKey(final String description) {
+        final String lower = description.toLowerCase(Locale.ROOT);
+        final String[] labels = { "gleis ", "pos. ", "pos ", "position " };
+
+        int index = -1;
+        int labelLength = 0;
+        for (final String label : labels) {
+            final int labelIndex = lower.lastIndexOf(label);
+            if (labelIndex > index) {
+                index = labelIndex;
+                labelLength = label.length();
+            }
+        }
+
+        if (index < 0)
+            return "";
+        return normalizePositionKey(description.substring(index + labelLength));
+    }
+
+    private static String normalizePositionKey(final String position) {
+        String normalized = position.trim().toLowerCase(Locale.ROOT);
+        for (final String prefix : new String[] { "gleis", "position", "pos.", "pos" }) {
+            if (normalized.startsWith(prefix)) {
+                normalized = normalized.substring(prefix.length()).trim();
+                break;
+            }
+        }
+        return normalized.replaceAll("\\s+", "");
+    }
+
+    private static boolean matchesProduct(final String description, final @Nullable Product product) {
+        if (product == null)
+            return true;
+
+        final String lower = description.toLowerCase(Locale.ROOT);
+        if (product == Product.BUS)
+            return lower.contains("bushalt") || lower.contains("ersatzhalt");
+        if (product == Product.SUBWAY)
+            return lower.contains("u-bahnsteig") || lower.contains("u bahnsteig");
+        if (product == Product.SUBURBAN_TRAIN)
+            return lower.contains("s-bahnsteig") || lower.contains("s bahnsteig");
+        if (product == Product.TRAM)
+            return lower.contains("tram") || lower.contains("straßenbahn");
+        return true;
     }
 }

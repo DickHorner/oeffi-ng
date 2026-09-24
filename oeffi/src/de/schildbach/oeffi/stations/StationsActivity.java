@@ -1662,7 +1662,7 @@ public class StationsActivity extends OeffiMainActivity implements StationsAware
 
         final String stationId = station.location.id;
         backgroundHandler.post(() -> {
-            final List<Location> positions = VbbStopPositions.load(this, stationId);
+            final List<Location> positions = VbbStopPositions.load(this, station.location);
             runOnUiThread(() -> {
                 if (selectedStation == null || !stationId.equals(selectedStation.location.id))
                     return;
