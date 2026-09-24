@@ -165,6 +165,7 @@ public class StationsActivity extends OeffiMainActivity implements StationsAware
     private final Map<String, Station> stationsMap = new HashMap<>();
     private final Map<String, Integer> favorites = new HashMap<>();
     private Station selectedStation;
+    private List<Location> selectedStationPositions = Collections.emptyList();
     private Point deviceLocation;
     private Location fixedLocation;
     private boolean fixedLocationResolving;
@@ -1634,6 +1635,11 @@ public class StationsActivity extends OeffiMainActivity implements StationsAware
         return stations;
     }
 
+    @Override
+    public final List<Location> getStationPositions() {
+        return selectedStationPositions;
+    }
+
     public final Integer getFavoriteState(final String stationId) {
         return favorites.get(stationId);
     }
@@ -1643,8 +1649,40 @@ public class StationsActivity extends OeffiMainActivity implements StationsAware
         selectStation(selectedStation);
     }
 
+    private boolean supportsVbbStopPositions() {
+        return network == NetworkId.BVG || network == NetworkId.BVGLEGACY || network == NetworkId.VBB;
+    }
+
+    private void loadSelectedStationPositions(final Station station) {
+        selectedStationPositions = Collections.emptyList();
+        getMapView().invalidate();
+
+        if (station == null || station.location.id == null || !supportsVbbStopPositions())
+            return;
+
+        final String stationId = station.location.id;
+        backgroundHandler.post(() -> {
+            final List<Location> positions = VbbStopPositions.load(this, stationId);
+            runOnUiThread(() -> {
+                if (selectedStation == null || !stationId.equals(selectedStation.location.id))
+                    return;
+
+                selectedStationPositions = positions;
+                getMapView().invalidate();
+
+                if (!positions.isEmpty()) {
+                    final List<Location> mapLocations = new ArrayList<>(positions.size() + 1);
+                    mapLocations.add(selectedStation.location);
+                    mapLocations.addAll(positions);
+                    getMapView().zoomToStations(mapLocations, 0);
+                }
+            });
+        });
+    }
+
     public final void selectStation(final Station station) {
         selectedStation = station;
+        loadSelectedStationPositions(station);
         stationListAdapter.notifyDataSetChanged();
         journeyListAdapter.notifyDataSetChanged();
 

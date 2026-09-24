@@ -429,6 +429,9 @@ public class OsmDroidOeffiMapView extends MapView implements OeffiMapView.Implem
         final float tripStrokeWidthSelected;
         final float tripStrokeWidthSelectedGlow;
         final int bubbleTextColor;
+        final float stationPositionRadius;
+        final Paint stationPositionFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        final Paint stationPositionStrokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
         final Drawable startIcon = drawablePointer(R.drawable.ic_maps_indicator_startpoint_list, 2);
         final Drawable pointIcon = drawableCenter(R.drawable.ic_maps_product_default, 2);
@@ -457,6 +460,15 @@ public class OsmDroidOeffiMapView extends MapView implements OeffiMapView.Implem
             tripStrokeWidthSelected = res.getDimension(R.dimen.map_trip_stroke_width_selected);
             tripStrokeWidthSelectedGlow = res.getDimension(R.dimen.map_trip_stroke_width_selected_glow);
             bubbleTextColor = res.getColor(R.color.fg_significant_on_light);
+
+            stationPositionRadius = TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP, 4f, res.getDisplayMetrics());
+            stationPositionFillPaint.setStyle(Paint.Style.FILL);
+            stationPositionFillPaint.setColor(Color.WHITE);
+            stationPositionStrokePaint.setStyle(Paint.Style.STROKE);
+            stationPositionStrokePaint.setStrokeWidth(TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP, 1.5f, res.getDisplayMetrics()));
+            stationPositionStrokePaint.setColor(Color.DKGRAY);
         }
 
         @Override
@@ -652,6 +664,15 @@ public class OsmDroidOeffiMapView extends MapView implements OeffiMapView.Implem
                 }
 
                 if (stationsAware != null) {
+                    for (final Location stationPosition : stationsAware.getStationPositions()) {
+                        if (stationPosition.hasCoord()) {
+                            projection.toPixels(new GeoPoint(stationPosition.getLatAsDouble(),
+                                    stationPosition.getLonAsDouble()), point);
+                            canvas.drawCircle(point.x, point.y, stationPositionRadius, stationPositionFillPaint);
+                            canvas.drawCircle(point.x, point.y, stationPositionRadius, stationPositionStrokePaint);
+                        }
+                    }
+
                     final List<Station> stations = stationsAware.getStations();
                     if (stations != null) {
                         Station selectedStation = null;

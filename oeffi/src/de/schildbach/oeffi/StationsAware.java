@@ -18,11 +18,17 @@
 package de.schildbach.oeffi;
 
 import de.schildbach.oeffi.stations.Station;
+import de.schildbach.pte.dto.Location;
 
+import java.util.Collections;
 import java.util.List;
 
 public interface StationsAware {
     List<Station> getStations();
+
+    default List<Location> getStationPositions() {
+        return Collections.emptyList();
+    }
 
     Integer getFavoriteState(String stationId);
 

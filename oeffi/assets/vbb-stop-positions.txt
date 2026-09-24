@@ -1,0 +1,28 @@
+# vbb-stop-positions.txt,1
+# Proof-of-concept stop-position index for Öffi NG.
+# Source: Verkehrsverbund Berlin-Brandenburg (VBB), UMBW/Haltestellenzugänge, CC BY 4.0.
+# Snapshot supplied for development; this initial fixture contains only S+U Rathaus Steglitz.
+# parent_stop_id|element_id|lat|lon|name
+900062202|300012008|52.456663|13.321031|Bushalt Albrechtstraße ht. Schloßstraße
+900062202|300012013|52.456436|13.322219|Bushalt Albrechtstraße vor Kuhligkshofstr. Pos. 5
+900062202|300012014|52.456779|13.321484|Bushalt Albrechtstraße vor Schloßstraße Pos. 4
+900062202|300012007|52.457208|13.320061|Bushalt Grunewaldstraße ht. Schloßstraße
+900062202|300012055|52.454930|13.320339|Bushalt Kuhligkshofstraße Fahrbahn links
+900062202|300012016|52.456117|13.322048|Bushalt Kuhligkshofstraße ht. Albrechtstraße
+900062202|300012011|52.456215|13.322536|Bushalt Kuhligkshofstraße vor Albrechtstr. Pos. 9
+900062202|300012001|52.457289|13.321267|Bushalt Schloßstraße ht. Albrechtstraße Pos. 3
+900062202|300012003|52.455172|13.319449|Bushalt Schloßstraße ht. ggü. Wrangelstraße
+900062202|300012005|52.456295|13.319906|Bushalt Schloßstraße ht. Grunewaldstraße Pos. 1
+900062202|300012006|52.456542|13.320132|Bushalt Schloßstraße ht. Grunewaldstraße Pos. 2
+900062202|300012002|52.456361|13.320356|Bushalt Schloßstraße vor Albrechtsstraße
+900062202|300012004|52.455980|13.319976|Bushalt Schloßstraße vor Albrechtstraße
+900062202|300012022|52.455728|13.321116|Bushalt Steglitzer Kreisel
+900062202|300012024|52.455752|13.320853|Bushalt Steglitzer Kreisel Pos. 6
+900062202|300012023|52.455504|13.320632|Bushalt Steglitzer Kreisel Pos. 7
+900062202|300012021|52.455565|13.320961|Bushalt Steglitzer Kreisel Pos. 8
+900062202|300012010|52.457930|13.321830|Ersatzhalt Schloßstraße Höhe Hausnummer 90
+900062202|300012009|52.455933|13.319978|Ersatzhalt Schloßstraße vor Wrangelstraße
+900062202|300012150|52.455450|13.322332|S Bahnsteig Gleis 1
+900062202|300012151|52.455394|13.322476|S Bahnsteig Gleis 2
+900062202|300012091|52.456170|13.320477|U-Bahnsteig Gleis 1
+900062202|300012092|52.456134|13.320686|U-Bahnsteig Gleis 2
