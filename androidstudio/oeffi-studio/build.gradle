@@ -25,8 +25,9 @@ ext {
 }
 
 def oeffi_ng_password = System.getenv('OEFFI_NG_JKS_PASSWORD')
-if (!oeffi_ng_password) {
-    file('../../passwords.properties').withInputStream {
+def passwordsFile = file('../../passwords.properties')
+if (!oeffi_ng_password && passwordsFile.exists()) {
+    passwordsFile.withInputStream {
         def props = new Properties()
         props.load(it)
         oeffi_ng_password = props.get('oeffi_ng.jks.password')
@@ -39,7 +40,9 @@ if (!oeffi_ng_password) {
 def androidManifest = new XmlSlurper().parse("../oeffi/AndroidManifest.xml")
 CREDENTIALS.oeffiOriginalVersionName = androidManifest.'@android:versionName'.toString()
 CREDENTIALS.oeffiOriginalVersionCode = androidManifest.'@android:versionCode'.toString()
-CREDENTIALS.editionName = gitBranch != null && gitBranch !== 'main' && gitBranch != 'master' && gitBranch != 'nextgen' ? gitBranch : null
+CREDENTIALS.editionName = gitBranch != null && gitBranch !== 'main' && gitBranch != 'master' && gitBranch != 'nextgen'
+        ? gitBranch.replaceAll('[^A-Za-z0-9_]', '_')
+        : null
 CREDENTIALS.applicationId = "de.santawho.oeffi_ng${CREDENTIALS.editionName ? ".${CREDENTIALS.editionName}" : ''}"
 CREDENTIALS.report_email = "oeffi.report@santawho.de"
 CREDENTIALS.github_url = "https://github.com/${CREDENTIALS.github_user}/${CREDENTIALS.github_repo}"
@@ -90,11 +93,13 @@ android {
     }
 
     signingConfigs {
-        oeffi_ng {
-            storeFile file("../../oeffi-ng.jks")
-            keyAlias "apk"
-            storePassword oeffi_ng_password
-            keyPassword oeffi_ng_password
+        if (oeffi_ng_password) {
+            oeffi_ng {
+                storeFile file("../../oeffi-ng.jks")
+                keyAlias "apk"
+                storePassword oeffi_ng_password
+                keyPassword oeffi_ng_password
+            }
         }
     }
 
@@ -148,7 +153,8 @@ android {
     buildTypes {
         configureEach {
             minifyEnabled false
-            signingConfig = signingConfigs.oeffi_ng
+            if (oeffi_ng_password)
+                signingConfig = signingConfigs.oeffi_ng
         }
         debug {
             debuggable true
