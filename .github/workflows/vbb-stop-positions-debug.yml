@@ -27,9 +27,9 @@ jobs:
         with:
           packages: 'platform-tools platforms;android-37.0'
 
-      - name: Build debug APK
+      - name: Test and build debug APK
         working-directory: androidstudio
-        run: bash ./gradlew :oeffi-studio:assembleNgDebug --stacktrace
+        run: bash ./gradlew :oeffi-studio:testNgDebugUnitTest :oeffi-studio:assembleNgDebug --stacktrace
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
