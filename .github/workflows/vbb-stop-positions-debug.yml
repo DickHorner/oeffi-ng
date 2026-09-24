@@ -25,10 +25,7 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v4
         with:
-          packages: ''
-
-      - name: Install Android platform
-        run: sdkmanager --channel=3 "platforms;android-37"
+          packages: 'platform-tools platforms;android-36'
 
       - name: Build debug APK
         working-directory: androidstudio
