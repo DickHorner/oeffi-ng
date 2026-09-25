@@ -126,7 +126,18 @@ final class VbbStopPositions {
         return null;
     }
 
+    static @Nullable String markerLabel(final Location location) {
+        if (location.name == null)
+            return null;
+        return extractPositionLabel(location.name);
+    }
+
     private static String extractPositionKey(final String description) {
+        final String label = extractPositionLabel(description);
+        return label == null ? "" : normalizePositionKey(label);
+    }
+
+    private static @Nullable String extractPositionLabel(final String description) {
         final String lower = description.toLowerCase(Locale.ROOT);
         final String[] labels = { "gleis ", "pos. ", "pos ", "position " };
 
@@ -141,8 +152,10 @@ final class VbbStopPositions {
         }
 
         if (index < 0)
-            return "";
-        return normalizePositionKey(description.substring(index + labelLength));
+            return null;
+
+        final String value = description.substring(index + labelLength).trim();
+        return value.isEmpty() ? null : value;
     }
 
     private static String normalizePositionKey(final String position) {

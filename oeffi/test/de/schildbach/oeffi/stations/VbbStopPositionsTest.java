@@ -1,5 +1,6 @@
 package de.schildbach.oeffi.stations;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -28,6 +29,16 @@ public class VbbStopPositionsTest {
         assertTrue(VbbStopPositions.matchesStationId("900062202", "de:11000:900062202"));
         assertTrue(VbbStopPositions.matchesStationId("900062202", "de:11000:900000062202"));
         assertFalse(VbbStopPositions.matchesStationId("900062202", "900000062282"));
+    }
+
+    @Test
+    public void extractsCompactMarkerLabels() {
+        assertEquals("5", VbbStopPositions.markerLabel(
+                position("bus", "Bushalt Albrechtstraße vor Kuhligkshofstr. Pos. 5")));
+        assertEquals("2", VbbStopPositions.markerLabel(
+                position("u", "U-Bahnsteig Gleis 2")));
+        assertNull(VbbStopPositions.markerLabel(
+                position("bus", "Bushalt Steglitzer Kreisel")));
     }
 
     @Test

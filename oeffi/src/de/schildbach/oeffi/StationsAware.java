@@ -34,6 +34,10 @@ public interface StationsAware {
         return null;
     }
 
+    default String getStationPositionLabel(final Location stationPosition) {
+        return null;
+    }
+
     default void selectStationPosition(final Location stationPosition) {
     }
 
