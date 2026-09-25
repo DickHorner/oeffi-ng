@@ -165,8 +165,8 @@ public class StationsActivity extends OeffiMainActivity implements StationsAware
     private final Map<String, Station> stationsMap = new HashMap<>();
     private final Map<String, Integer> favorites = new HashMap<>();
     private Station selectedStation;
-    private List<Location> selectedStationPositions = Collections.emptyList();
-    private Location selectedStationPosition;
+    private List<StationPosition> selectedStationPositions = Collections.emptyList();
+    private StationPosition selectedStationPosition;
     private Point deviceLocation;
     private Location fixedLocation;
     private boolean fixedLocationResolving;
@@ -1637,18 +1637,18 @@ public class StationsActivity extends OeffiMainActivity implements StationsAware
     }
 
     @Override
-    public final List<Location> getStationPositions() {
+    public final List<StationPosition> getStationPositions() {
         return selectedStationPositions;
     }
 
     @Override
-    public final Location getSelectedStationPosition() {
+    public final StationPosition getSelectedStationPosition() {
         return selectedStationPosition;
     }
 
 
     @Override
-    public final void selectStationPosition(final Location stationPosition) {
+    public final void selectStationPosition(final StationPosition stationPosition) {
         selectedStationPosition = stationPosition;
         getMapView().invalidate();
     }
@@ -1676,7 +1676,7 @@ public class StationsActivity extends OeffiMainActivity implements StationsAware
 
         final String stationId = station.location.id;
         backgroundHandler.post(() -> {
-            final List<Location> positions = VbbStopPositions.load(this, station.location);
+            final List<StationPosition> positions = VbbStopPositions.load(this, station.location);
             runOnUiThread(() -> {
                 if (selectedStation == null || !stationId.equals(selectedStation.location.id))
                     return;
@@ -1687,7 +1687,8 @@ public class StationsActivity extends OeffiMainActivity implements StationsAware
                 if (!positions.isEmpty()) {
                     final List<Location> mapLocations = new ArrayList<>(positions.size() + 1);
                     mapLocations.add(selectedStation.location);
-                    mapLocations.addAll(positions);
+                    for (final StationPosition position : positions)
+                        mapLocations.add(position.location);
                     getMapView().zoomToStations(mapLocations, 0);
                 }
             });

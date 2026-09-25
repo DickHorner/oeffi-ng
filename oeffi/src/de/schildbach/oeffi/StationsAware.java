@@ -18,7 +18,7 @@
 package de.schildbach.oeffi;
 
 import de.schildbach.oeffi.stations.Station;
-import de.schildbach.pte.dto.Location;
+import de.schildbach.oeffi.stations.StationPosition;
 
 import java.util.Collections;
 import java.util.List;
@@ -26,16 +26,16 @@ import java.util.List;
 public interface StationsAware {
     List<Station> getStations();
 
-    default List<Location> getStationPositions() {
+    default List<StationPosition> getStationPositions() {
         return Collections.emptyList();
     }
 
-    default Location getSelectedStationPosition() {
+    default StationPosition getSelectedStationPosition() {
         return null;
     }
 
 
-    default void selectStationPosition(final Location stationPosition) {
+    default void selectStationPosition(final StationPosition stationPosition) {
     }
 
     Integer getFavoriteState(String stationId);

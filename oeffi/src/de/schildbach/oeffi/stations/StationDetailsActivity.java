@@ -171,8 +171,8 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
     private NetworkId selectedNetwork;
     private Location selectedLocation;
     private Station selectedStation;
-    private List<Location> selectedStationPositions = Collections.emptyList();
-    private Location selectedStationPosition;
+    private List<StationPosition> selectedStationPositions = Collections.emptyList();
+    private StationPosition selectedStationPosition;
     private CombinedStation selectedCombinedStation;
     private Location selectedCoord;
     private final Set<Product> products = new HashSet<>(Product.ALL_SELECTABLE);
@@ -781,18 +781,18 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
     }
 
     @Override
-    public List<Location> getStationPositions() {
+    public List<StationPosition> getStationPositions() {
         return selectedStationPositions;
     }
 
     @Override
-    public Location getSelectedStationPosition() {
+    public StationPosition getSelectedStationPosition() {
         return selectedStationPosition;
     }
 
 
     @Override
-    public void selectStationPosition(final Location stationPosition) {
+    public void selectStationPosition(final StationPosition stationPosition) {
         selectedStationPosition = stationPosition;
         getMapView().invalidate();
     }
@@ -823,7 +823,7 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
 
         final String stationId = station.location.id;
         backgroundHandler.post(() -> {
-            final List<Location> positions = VbbStopPositions.load(this, station.location);
+            final List<StationPosition> positions = VbbStopPositions.load(this, station.location);
             runOnUiThread(() -> {
                 if (selectedLocation == null || !stationId.equals(selectedLocation.id))
                     return;
@@ -840,10 +840,10 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
             return;
 
         backgroundHandler.post(() -> {
-            final List<Location> positions = selectedStationPositions.isEmpty()
+            final List<StationPosition> positions = selectedStationPositions.isEmpty()
                     ? VbbStopPositions.load(this, station)
                     : selectedStationPositions;
-            final Location stationPosition = VbbStopPositions.find(positions, position, product);
+            final StationPosition stationPosition = VbbStopPositions.find(positions, position, product);
 
             runOnUiThread(() -> {
                 if (!station.equals(selectedLocation))
@@ -857,7 +857,7 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
                 if (stationPosition != null) {
                     setMapVisible(true);
                     selectStationPosition(stationPosition);
-                    getMapView().zoomToStations(List.of(stationPosition), 0);
+                    getMapView().zoomToStations(List.of(stationPosition.location), 0);
                 }
             });
         });

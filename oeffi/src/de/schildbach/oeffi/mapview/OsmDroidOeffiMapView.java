@@ -69,6 +69,7 @@ import de.schildbach.oeffi.StationsAware;
 import de.schildbach.oeffi.TripAware;
 import de.schildbach.oeffi.util.LineView;
 import de.schildbach.oeffi.stations.Station;
+import de.schildbach.oeffi.stations.StationPosition;
 import de.schildbach.oeffi.util.GeoUtils;
 import de.schildbach.oeffi.util.GeocoderThread;
 import de.schildbach.oeffi.util.LocationUtils;
@@ -670,21 +671,17 @@ public class OsmDroidOeffiMapView extends MapView implements OeffiMapView.Implem
                 }
 
                 if (stationsAware != null) {
-                    final Location selectedStationPosition = stationsAware.getSelectedStationPosition();
-                    for (final Location stationPosition : stationsAware.getStationPositions()) {
-                        if (stationPosition.hasCoord()) {
-                            projection.toPixels(new GeoPoint(stationPosition.getLatAsDouble(),
-                                    stationPosition.getLonAsDouble()), point);
+                    final StationPosition selectedStationPosition = stationsAware.getSelectedStationPosition();
+                    for (final StationPosition stationPosition : stationsAware.getStationPositions()) {
+                        if (stationPosition.location.hasCoord()) {
+                            projection.toPixels(new GeoPoint(stationPosition.location.getLatAsDouble(),
+                                    stationPosition.location.getLonAsDouble()), point);
                             final boolean selected = stationPosition.equals(selectedStationPosition);
-                            final String positionLabel = stationPosition.displayId;
+                            final String positionLabel = stationPosition.label;
                             if (positionLabel == null)
                                 continue;
 
-                            final Product positionProduct = stationPosition.products != null
-                                    && stationPosition.products.size() == 1
-                                    ? stationPosition.products.iterator().next()
-                                    : null;
-                            setStationPositionBadgeColors(positionProduct);
+                            setStationPositionBadgeColors(stationPosition.product);
 
                             final Paint.FontMetrics fontMetrics = stationPositionBadgeTextPaint.getFontMetrics();
                             final float selectedPadding = selected ? stationPositionBadgePaddingVertical : 0f;
@@ -774,7 +771,7 @@ public class OsmDroidOeffiMapView extends MapView implements OeffiMapView.Implem
                                     selectedStationPosition.getLonAsDouble()), point);
                             final TextView bubble = new TextView(getContext());
                             bubble.setBackgroundResource(R.drawable.popup_dir_pointer_button);
-                            bubble.setText(selectedStationPosition.name);
+                            bubble.setText(selectedStationPosition.location.name);
                             bubble.setTypeface(Typeface.DEFAULT_BOLD);
                             bubble.setTextSize(TypedValue.COMPLEX_UNIT_PX, stationFontSize);
                             bubble.setTextColor(bubbleTextColor);
@@ -866,15 +863,15 @@ public class OsmDroidOeffiMapView extends MapView implements OeffiMapView.Implem
 
             Station tappedStation = null;
             if (stationsAware != null) {
-                Location tappedStationPosition = null;
+                StationPosition tappedStationPosition = null;
                 float tappedStationPositionDistanceSquared = 0;
                 final android.graphics.Point stationPositionPoint = new android.graphics.Point();
-                for (final Location stationPosition : stationsAware.getStationPositions()) {
-                    if (!stationPosition.hasCoord())
+                for (final StationPosition stationPosition : stationsAware.getStationPositions()) {
+                    if (!stationPosition.location.hasCoord())
                         continue;
 
-                    projection.toPixels(new GeoPoint(stationPosition.getLatAsDouble(),
-                            stationPosition.getLonAsDouble()), stationPositionPoint);
+                    projection.toPixels(new GeoPoint(stationPosition.location.getLatAsDouble(),
+                            stationPosition.location.getLonAsDouble()), stationPositionPoint);
                     final float dx = e.getX() - stationPositionPoint.x;
                     final float dy = e.getY() - stationPositionPoint.y;
                     final float distanceSquared = dx * dx + dy * dy;

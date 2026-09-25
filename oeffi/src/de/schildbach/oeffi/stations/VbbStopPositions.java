@@ -18,9 +18,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 import javax.annotation.Nullable;
 
@@ -37,8 +35,8 @@ final class VbbStopPositions {
     private VbbStopPositions() {
     }
 
-    static List<Location> load(final Context context, final Location station) {
-        final List<Location> positions = new ArrayList<>();
+    static List<StationPosition> load(final Context context, final Location station) {
+        final List<StationPosition> positions = new ArrayList<>();
 
         try (final BufferedReader reader = new BufferedReader(new InputStreamReader(
                 context.getAssets().open(ASSET_FILENAME), StandardCharsets.UTF_8))) {
@@ -50,30 +48,17 @@ final class VbbStopPositions {
                     continue;
 
                 final String[] fields = line.split("\\|", -1);
-                if (fields.length != 5 || !matchesStationId(station, fields[0]))
+                if (fields.length != 8 || !matchesStationIds(station, fields[0]))
                     continue;
 
                 try {
-                    final String name = fields[4];
-                    final String label = extractPositionLabel(name);
-                    if (label == null)
-                        continue;
-
-                    final Product product = markerProduct(name);
+                    final Product product = Product.fromCode(fields[4].charAt(0));
                     final Point coord = Point.fromDouble(
                             Double.parseDouble(fields[2]), Double.parseDouble(fields[3]));
-                    positions.add(new Location(
-                            LocationType.STATION,
-                            fields[1],
-                            fields[1],
-                            label,
-                            coord,
-                            null,
-                            name,
-                            product != null ? Collections.singleton(product) : null,
-                            "de",
-                            null));
-                } catch (final NumberFormatException x) {
+                    final Location location = new Location(
+                            LocationType.STATION, fields[1], coord, null, fields[7]);
+                    positions.add(new StationPosition(location, fields[5], fields[6], product));
+                } catch (final IllegalArgumentException x) {
                     log.warn("Could not parse VBB stop position: {}", line, x);
                 }
             }
@@ -84,108 +69,36 @@ final class VbbStopPositions {
         return positions;
     }
 
-    private static boolean matchesStationId(final Location station, final String parentId) {
-        return matchesStationId(parentId, station.id)
-                || matchesStationId(parentId, station.identityId)
-                || matchesStationId(parentId, station.displayId);
+    private static boolean matchesStationIds(final Location station, final String stationIds) {
+        return matchesStationId(stationIds, station.id)
+                || matchesStationId(stationIds, station.identityId)
+                || matchesStationId(stationIds, station.displayId);
     }
 
-    static boolean matchesStationId(final String parentId, final @Nullable String stationId) {
+    static boolean matchesStationId(final String stationIds, final @Nullable String stationId) {
         if (stationId == null)
             return false;
 
-        return normalizeStationId(parentId).equals(normalizeStationId(stationId));
+        for (final String candidate : stationIds.split(","))
+            if (candidate.equals(stationId))
+                return true;
+        return false;
     }
 
-    private static String normalizeStationId(final String stationId) {
-        String id = stationId;
-        for (final String part : stationId.split(":")) {
-            if (part.length() >= 9 && part.length() <= 12 && part.chars().allMatch(Character::isDigit)) {
-                id = part;
-                break;
-            }
-        }
-
-        if (id.length() == 12 && "000".equals(id.substring(3, 6)))
-            return id.substring(0, 3) + id.substring(6);
-
-        return id;
-    }
-
-    static @Nullable Location find(
-            final List<Location> positions, final Position position, final @Nullable Product product) {
-        final String positionKey = normalizePositionKey(position.toString());
-        Location typedMatch = null;
-        int typedMatches = 0;
-        Location anyMatch = null;
-        int anyMatches = 0;
-
-        for (final Location location : positions) {
-            if (location.displayId == null)
-                continue;
-            if (!positionKey.equals(normalizePositionKey(location.displayId)))
-                continue;
-
-            anyMatch = location;
-            anyMatches++;
-            if (product != null && location.products != null && location.products.contains(product)) {
-                typedMatch = location;
-                typedMatches++;
-            }
-        }
-
-        if (typedMatches == 1)
-            return typedMatch;
-        if (anyMatches == 1)
-            return anyMatch;
-        return null;
-    }
-
-    static @Nullable Product markerProduct(final String description) {
-        final String lower = description.toLowerCase(Locale.ROOT);
-        if (lower.contains("bushalt") || lower.contains("ersatzhalt"))
-            return Product.BUS;
-        if (lower.contains("u-bahnsteig") || lower.contains("u bahnsteig"))
-            return Product.SUBWAY;
-        if (lower.contains("s-bahnsteig") || lower.contains("s bahnsteig"))
-            return Product.SUBURBAN_TRAIN;
-        if (lower.contains("tram") || lower.contains("straßenbahn"))
-            return Product.TRAM;
-        if (lower.contains("bahnsteig") || lower.contains("gleis"))
-            return Product.REGIONAL_TRAIN;
-        return null;
-    }
-
-    static @Nullable String extractPositionLabel(final String description) {
-        final String lower = description.toLowerCase(Locale.ROOT);
-        final String[] labels = { "gleis ", "pos. ", "pos ", "position " };
-
-        int index = -1;
-        int labelLength = 0;
-        for (final String label : labels) {
-            final int labelIndex = lower.lastIndexOf(label);
-            if (labelIndex > index) {
-                index = labelIndex;
-                labelLength = label.length();
-            }
-        }
-
-        if (index < 0)
+    static @Nullable StationPosition find(
+            final List<StationPosition> positions, final Position position, final @Nullable Product product) {
+        if (product == null)
             return null;
 
-        final String value = description.substring(index + labelLength).trim();
-        return value.isEmpty() ? null : value;
-    }
-
-    private static String normalizePositionKey(final String position) {
-        String normalized = position.trim().toLowerCase(Locale.ROOT);
-        for (final String prefix : new String[] { "gleis", "position", "pos.", "pos" }) {
-            if (normalized.startsWith(prefix)) {
-                normalized = normalized.substring(prefix.length()).trim();
-                break;
-            }
+        StationPosition match = null;
+        for (final StationPosition stationPosition : positions) {
+            if (stationPosition.product != product || !stationPosition.hafasPositionName.equals(position.name))
+                continue;
+            if (match != null)
+                return null;
+            match = stationPosition;
         }
-        return normalized.replaceAll("\\s+", "");
+        return match;
     }
 
 }

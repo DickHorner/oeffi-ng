@@ -1,18 +1,19 @@
-# vbb-stop-positions.txt,1
-# Proof-of-concept stop-position index for Öffi NG.
+# vbb-stop-positions.txt,2
+# Structured proof-of-concept stop-position index for Öffi NG.
 # Source: Verkehrsverbund Berlin-Brandenburg (VBB), UMBW/Haltestellenzugänge, CC BY 4.0.
-# Snapshot supplied for development; this initial fixture contains only S+U Rathaus Steglitz.
-# parent_stop_id|element_id|lat|lon|name
-900062202|300012013|52.456436|13.322219|Bushalt Albrechtstraße vor Kuhligkshofstr. Pos. 5
-900062202|300012014|52.456779|13.321484|Bushalt Albrechtstraße vor Schloßstraße Pos. 4
-900062202|300012011|52.456215|13.322536|Bushalt Kuhligkshofstraße vor Albrechtstr. Pos. 9
-900062202|300012001|52.457289|13.321267|Bushalt Schloßstraße ht. Albrechtstraße Pos. 3
-900062202|300012005|52.456295|13.319906|Bushalt Schloßstraße ht. Grunewaldstraße Pos. 1
-900062202|300012006|52.456542|13.320132|Bushalt Schloßstraße ht. Grunewaldstraße Pos. 2
-900062202|300012024|52.455752|13.320853|Bushalt Steglitzer Kreisel Pos. 6
-900062202|300012023|52.455504|13.320632|Bushalt Steglitzer Kreisel Pos. 7
-900062202|300012021|52.455565|13.320961|Bushalt Steglitzer Kreisel Pos. 8
-900062202|300012150|52.455450|13.322332|S Bahnsteig Gleis 1
-900062202|300012151|52.455394|13.322476|S Bahnsteig Gleis 2
-900062202|300012091|52.456170|13.320477|U-Bahnsteig Gleis 1
-900062202|300012092|52.456134|13.320686|U-Bahnsteig Gleis 2
+# Snapshot supplied for development; this fixture contains only S+U Rathaus Steglitz.
+# No runtime name parsing: product, HAFAS position name and display label are explicit data fields.
+# station_ids|element_id|lat|lon|product_code|hafas_position_name|label|official_name
+900062202,900000062202,de:11000:900062202,de:11000:900000062202|300012013|52.456436|13.322219|B|Pos. 5|5|Bushalt Albrechtstraße vor Kuhligkshofstr. Pos. 5
+900062202,900000062202,de:11000:900062202,de:11000:900000062202|300012014|52.456779|13.321484|B|Pos. 4|4|Bushalt Albrechtstraße vor Schloßstraße Pos. 4
+900062202,900000062202,de:11000:900062202,de:11000:900000062202|300012011|52.456215|13.322536|B|Pos. 9|9|Bushalt Kuhligkshofstraße vor Albrechtstr. Pos. 9
+900062202,900000062202,de:11000:900062202,de:11000:900000062202|300012001|52.457289|13.321267|B|Pos. 3|3|Bushalt Schloßstraße ht. Albrechtstraße Pos. 3
+900062202,900000062202,de:11000:900062202,de:11000:900000062202|300012005|52.456295|13.319906|B|Pos. 1|1|Bushalt Schloßstraße ht. Grunewaldstraße Pos. 1
+900062202,900000062202,de:11000:900062202,de:11000:900000062202|300012006|52.456542|13.320132|B|Pos. 2|2|Bushalt Schloßstraße ht. Grunewaldstraße Pos. 2
+900062202,900000062202,de:11000:900062202,de:11000:900000062202|300012024|52.455752|13.320853|B|Pos. 6|6|Bushalt Steglitzer Kreisel Pos. 6
+900062202,900000062202,de:11000:900062202,de:11000:900000062202|300012023|52.455504|13.320632|B|Pos. 7|7|Bushalt Steglitzer Kreisel Pos. 7
+900062202,900000062202,de:11000:900062202,de:11000:900000062202|300012021|52.455565|13.320961|B|Pos. 8|8|Bushalt Steglitzer Kreisel Pos. 8
+900062202,900000062202,de:11000:900062202,de:11000:900000062202|300012150|52.455450|13.322332|S|1|1|S Bahnsteig Gleis 1
+900062202,900000062202,de:11000:900062202,de:11000:900000062202|300012151|52.455394|13.322476|S|2|2|S Bahnsteig Gleis 2
+900062202,900000062202,de:11000:900062202,de:11000:900000062202|300012091|52.456170|13.320477|U|1|1|U-Bahnsteig Gleis 1
+900062202,900000062202,de:11000:900062202,de:11000:900000062202|300012092|52.456134|13.320686|U|2|2|U-Bahnsteig Gleis 2
