@@ -429,12 +429,9 @@ public class OsmDroidOeffiMapView extends MapView implements OeffiMapView.Implem
         final float tripStrokeWidthSelected;
         final float tripStrokeWidthSelectedGlow;
         final int bubbleTextColor;
-        final float stationPositionRadius;
         final float stationPositionTapRadius;
         final float stationPositionBadgePaddingHorizontal;
         final float stationPositionBadgePaddingVertical;
-        final Paint stationPositionFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        final Paint stationPositionStrokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         final Paint stationPositionBadgeFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         final Paint stationPositionBadgeTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
@@ -466,20 +463,12 @@ public class OsmDroidOeffiMapView extends MapView implements OeffiMapView.Implem
             tripStrokeWidthSelectedGlow = res.getDimension(R.dimen.map_trip_stroke_width_selected_glow);
             bubbleTextColor = res.getColor(R.color.fg_significant_on_light);
 
-            stationPositionRadius = TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP, 4f, res.getDisplayMetrics());
             stationPositionTapRadius = TypedValue.applyDimension(
                     TypedValue.COMPLEX_UNIT_DIP, 24f, res.getDisplayMetrics());
             stationPositionBadgePaddingHorizontal = TypedValue.applyDimension(
                     TypedValue.COMPLEX_UNIT_DIP, 5f, res.getDisplayMetrics());
             stationPositionBadgePaddingVertical = TypedValue.applyDimension(
                     TypedValue.COMPLEX_UNIT_DIP, 2f, res.getDisplayMetrics());
-            stationPositionFillPaint.setStyle(Paint.Style.FILL);
-            stationPositionFillPaint.setColor(Color.WHITE);
-            stationPositionStrokePaint.setStyle(Paint.Style.STROKE);
-            stationPositionStrokePaint.setStrokeWidth(TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP, 1.5f, res.getDisplayMetrics()));
-            stationPositionStrokePaint.setColor(Color.DKGRAY);
             stationPositionBadgeFillPaint.setStyle(Paint.Style.FILL);
             stationPositionBadgeFillPaint.setColor(res.getColor(R.color.bg_position));
             stationPositionBadgeTextPaint.setColor(res.getColor(R.color.fg_position));
@@ -687,29 +676,27 @@ public class OsmDroidOeffiMapView extends MapView implements OeffiMapView.Implem
                             projection.toPixels(new GeoPoint(stationPosition.getLatAsDouble(),
                                     stationPosition.getLonAsDouble()), point);
                             final boolean selected = stationPosition.equals(selectedStationPosition);
-                            final String positionLabel = stationsAware.getStationPositionLabel(stationPosition);
+                            final String positionLabel = stationPosition.displayId;
+                            if (positionLabel == null)
+                                continue;
 
-                            if (positionLabel != null) {
-                                final Product positionProduct =
-                                        stationsAware.getStationPositionProduct(stationPosition);
-                                setStationPositionBadgeColors(positionProduct);
+                            final Product positionProduct = stationPosition.products != null
+                                    && stationPosition.products.size() == 1
+                                    ? stationPosition.products.iterator().next()
+                                    : null;
+                            setStationPositionBadgeColors(positionProduct);
 
-                                final Paint.FontMetrics fontMetrics = stationPositionBadgeTextPaint.getFontMetrics();
-                                final float selectedPadding = selected ? stationPositionBadgePaddingVertical : 0f;
-                                final float halfWidth = stationPositionBadgeTextPaint.measureText(positionLabel) / 2f
-                                        + stationPositionBadgePaddingHorizontal + selectedPadding;
-                                final float halfHeight = (fontMetrics.descent - fontMetrics.ascent) / 2f
-                                        + stationPositionBadgePaddingVertical + selectedPadding;
-                                canvas.drawRect(point.x - halfWidth, point.y - halfHeight,
-                                        point.x + halfWidth, point.y + halfHeight,
-                                        stationPositionBadgeFillPaint);
-                                final float baseline = point.y - (fontMetrics.ascent + fontMetrics.descent) / 2f;
-                                canvas.drawText(positionLabel, point.x, baseline, stationPositionBadgeTextPaint);
-                            } else {
-                                final float radius = selected ? stationPositionRadius * 1.5f : stationPositionRadius;
-                                canvas.drawCircle(point.x, point.y, radius, stationPositionFillPaint);
-                                canvas.drawCircle(point.x, point.y, radius, stationPositionStrokePaint);
-                            }
+                            final Paint.FontMetrics fontMetrics = stationPositionBadgeTextPaint.getFontMetrics();
+                            final float selectedPadding = selected ? stationPositionBadgePaddingVertical : 0f;
+                            final float halfWidth = stationPositionBadgeTextPaint.measureText(positionLabel) / 2f
+                                    + stationPositionBadgePaddingHorizontal + selectedPadding;
+                            final float halfHeight = (fontMetrics.descent - fontMetrics.ascent) / 2f
+                                    + stationPositionBadgePaddingVertical + selectedPadding;
+                            canvas.drawRect(point.x - halfWidth, point.y - halfHeight,
+                                    point.x + halfWidth, point.y + halfHeight,
+                                    stationPositionBadgeFillPaint);
+                            final float baseline = point.y - (fontMetrics.ascent + fontMetrics.descent) / 2f;
+                            canvas.drawText(positionLabel, point.x, baseline, stationPositionBadgeTextPaint);
                         }
                     }
 
@@ -800,7 +787,7 @@ public class OsmDroidOeffiMapView extends MapView implements OeffiMapView.Implem
                                     point.y + height / 2);
                             canvas.save();
                             canvas.translate(point.x - width / 2,
-                                    point.y - height - stationPositionRadius * 2f);
+                                    point.y - height - stationFontSize);
                             bubble.draw(canvas);
                             canvas.restore();
                         }

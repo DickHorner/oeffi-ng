@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -53,10 +54,25 @@ final class VbbStopPositions {
                     continue;
 
                 try {
+                    final String name = fields[4];
+                    final String label = extractPositionLabel(name);
+                    if (label == null)
+                        continue;
+
+                    final Product product = markerProduct(name);
                     final Point coord = Point.fromDouble(
                             Double.parseDouble(fields[2]), Double.parseDouble(fields[3]));
                     positions.add(new Location(
-                            LocationType.STATION, fields[1], coord, null, fields[4]));
+                            LocationType.STATION,
+                            fields[1],
+                            fields[1],
+                            label,
+                            coord,
+                            null,
+                            name,
+                            product != null ? Collections.singleton(product) : null,
+                            "de",
+                            null));
                 } catch (final NumberFormatException x) {
                     log.warn("Could not parse VBB stop position: {}", line, x);
                 }
@@ -126,17 +142,8 @@ final class VbbStopPositions {
         return null;
     }
 
-    static @Nullable String markerLabel(final Location location) {
-        if (location.name == null)
-            return null;
-        return extractPositionLabel(location.name);
-    }
-
-    static @Nullable Product markerProduct(final Location location) {
-        if (location.name == null)
-            return null;
-
-        final String lower = location.name.toLowerCase(Locale.ROOT);
+    static @Nullable Product markerProduct(final String description) {
+        final String lower = description.toLowerCase(Locale.ROOT);
         if (lower.contains("bushalt") || lower.contains("ersatzhalt"))
             return Product.BUS;
         if (lower.contains("u-bahnsteig") || lower.contains("u bahnsteig"))
@@ -155,7 +162,7 @@ final class VbbStopPositions {
         return label == null ? "" : normalizePositionKey(label);
     }
 
-    private static @Nullable String extractPositionLabel(final String description) {
+    static @Nullable String extractPositionLabel(final String description) {
         final String lower = description.toLowerCase(Locale.ROOT);
         final String[] labels = { "gleis ", "pos. ", "pos ", "position " };
 

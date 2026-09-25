@@ -33,28 +33,28 @@ public class VbbStopPositionsTest {
 
     @Test
     public void extractsCompactMarkerLabels() {
-        assertEquals("5", VbbStopPositions.markerLabel(
-                position("bus", "Bushalt Albrechtstraße vor Kuhligkshofstr. Pos. 5")));
-        assertEquals("2", VbbStopPositions.markerLabel(
-                position("u", "U-Bahnsteig Gleis 2")));
-        assertNull(VbbStopPositions.markerLabel(
-                position("bus", "Bushalt Steglitzer Kreisel")));
+        assertEquals("5", VbbStopPositions.extractPositionLabel(
+                "Bushalt Albrechtstraße vor Kuhligkshofstr. Pos. 5"));
+        assertEquals("2", VbbStopPositions.extractPositionLabel(
+                "U-Bahnsteig Gleis 2"));
+        assertNull(VbbStopPositions.extractPositionLabel(
+                "Bushalt Steglitzer Kreisel"));
     }
 
     @Test
     public void classifiesMarkerProducts() {
         assertEquals(Product.BUS, VbbStopPositions.markerProduct(
-                position("bus", "Bushalt Schloßstraße Pos. 1")));
+                "Bushalt Schloßstraße Pos. 1"));
         assertEquals(Product.SUBWAY, VbbStopPositions.markerProduct(
-                position("u", "U-Bahnsteig Gleis 1")));
+                "U-Bahnsteig Gleis 1"));
         assertEquals(Product.SUBURBAN_TRAIN, VbbStopPositions.markerProduct(
-                position("s", "S Bahnsteig Gleis 1")));
+                "S Bahnsteig Gleis 1"));
         assertEquals(Product.TRAM, VbbStopPositions.markerProduct(
-                position("tram", "Tramsteig Pos. 2")));
+                "Tramsteig Pos. 2"));
         assertEquals(Product.REGIONAL_TRAIN, VbbStopPositions.markerProduct(
-                position("rail", "Bahnsteig Gleis 4")));
+                "Bahnsteig Gleis 4"));
         assertNull(VbbStopPositions.markerProduct(
-                position("other", "Zugang Rathaus Steglitz")));
+                "Zugang Rathaus Steglitz"));
     }
 
     @Test

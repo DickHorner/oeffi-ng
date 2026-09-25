@@ -1646,15 +1646,6 @@ public class StationsActivity extends OeffiMainActivity implements StationsAware
         return selectedStationPosition;
     }
 
-    @Override
-    public final String getStationPositionLabel(final Location stationPosition) {
-        return VbbStopPositions.markerLabel(stationPosition);
-    }
-
-    @Override
-    public final Product getStationPositionProduct(final Location stationPosition) {
-        return VbbStopPositions.markerProduct(stationPosition);
-    }
 
     @Override
     public final void selectStationPosition(final Location stationPosition) {
