@@ -766,9 +766,9 @@ public class OsmDroidOeffiMapView extends MapView implements OeffiMapView.Implem
                             canvas.restore();
                         }
 
-                        if (selectedStationPosition != null && selectedStationPosition.hasCoord()) {
-                            projection.toPixels(new GeoPoint(selectedStationPosition.getLatAsDouble(),
-                                    selectedStationPosition.getLonAsDouble()), point);
+                        if (selectedStationPosition != null && selectedStationPosition.location.hasCoord()) {
+                            projection.toPixels(new GeoPoint(selectedStationPosition.location.getLatAsDouble(),
+                                    selectedStationPosition.location.getLonAsDouble()), point);
                             final TextView bubble = new TextView(getContext());
                             bubble.setBackgroundResource(R.drawable.popup_dir_pointer_button);
                             bubble.setText(selectedStationPosition.location.name);
