@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -18,8 +19,18 @@ import de.schildbach.pte.dto.Product;
 
 public class VbbStopPositionsTest {
     private static Location position(final String id, final String name) {
+        final Product product = VbbStopPositions.markerProduct(name);
         return new Location(
-                LocationType.STATION, id, Point.fromDouble(52.456, 13.321), null, name);
+                LocationType.STATION,
+                id,
+                id,
+                VbbStopPositions.extractPositionLabel(name),
+                Point.fromDouble(52.456, 13.321),
+                null,
+                name,
+                product != null ? Collections.singleton(product) : null,
+                "de",
+                null);
     }
 
     @Test
