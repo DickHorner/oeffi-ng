@@ -121,15 +121,14 @@ final class VbbStopPositions {
         int anyMatches = 0;
 
         for (final Location location : positions) {
-            if (location.name == null)
+            if (location.displayId == null)
                 continue;
-            final String locationPositionKey = extractPositionKey(location.name);
-            if (!positionKey.equals(locationPositionKey))
+            if (!positionKey.equals(normalizePositionKey(location.displayId)))
                 continue;
 
             anyMatch = location;
             anyMatches++;
-            if (matchesProduct(location.name, product)) {
+            if (product != null && location.products != null && location.products.contains(product)) {
                 typedMatch = location;
                 typedMatches++;
             }
@@ -155,11 +154,6 @@ final class VbbStopPositions {
         if (lower.contains("bahnsteig") || lower.contains("gleis"))
             return Product.REGIONAL_TRAIN;
         return null;
-    }
-
-    private static String extractPositionKey(final String description) {
-        final String label = extractPositionLabel(description);
-        return label == null ? "" : normalizePositionKey(label);
     }
 
     static @Nullable String extractPositionLabel(final String description) {
@@ -194,19 +188,4 @@ final class VbbStopPositions {
         return normalized.replaceAll("\\s+", "");
     }
 
-    private static boolean matchesProduct(final String description, final @Nullable Product product) {
-        if (product == null)
-            return true;
-
-        final String lower = description.toLowerCase(Locale.ROOT);
-        if (product == Product.BUS)
-            return lower.contains("bushalt") || lower.contains("ersatzhalt");
-        if (product == Product.SUBWAY)
-            return lower.contains("u-bahnsteig") || lower.contains("u bahnsteig");
-        if (product == Product.SUBURBAN_TRAIN)
-            return lower.contains("s-bahnsteig") || lower.contains("s bahnsteig");
-        if (product == Product.TRAM)
-            return lower.contains("tram") || lower.contains("straßenbahn");
-        return true;
-    }
 }
