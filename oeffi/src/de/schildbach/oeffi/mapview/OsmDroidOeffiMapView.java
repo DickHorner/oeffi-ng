@@ -689,14 +689,6 @@ public class OsmDroidOeffiMapView extends MapView implements OeffiMapView.Implem
                             final boolean selected = stationPosition.equals(selectedStationPosition);
                             final String positionLabel = stationsAware.getStationPositionLabel(stationPosition);
 
-                            final float anchorRadius;
-                            if (positionLabel != null)
-                                anchorRadius = stationPositionRadius * (selected ? 3.0f : 2.5f);
-                            else
-                                anchorRadius = stationPositionRadius * (selected ? 1.5f : 1.0f);
-                            canvas.drawCircle(point.x, point.y, anchorRadius, stationPositionFillPaint);
-                            canvas.drawCircle(point.x, point.y, anchorRadius, stationPositionStrokePaint);
-
                             if (positionLabel != null) {
                                 final Product positionProduct =
                                         stationsAware.getStationPositionProduct(stationPosition);
@@ -713,6 +705,10 @@ public class OsmDroidOeffiMapView extends MapView implements OeffiMapView.Implem
                                         stationPositionBadgeFillPaint);
                                 final float baseline = point.y - (fontMetrics.ascent + fontMetrics.descent) / 2f;
                                 canvas.drawText(positionLabel, point.x, baseline, stationPositionBadgeTextPaint);
+                            } else {
+                                final float radius = selected ? stationPositionRadius * 1.5f : stationPositionRadius;
+                                canvas.drawCircle(point.x, point.y, radius, stationPositionFillPaint);
+                                canvas.drawCircle(point.x, point.y, radius, stationPositionStrokePaint);
                             }
                         }
                     }
