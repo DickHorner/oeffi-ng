@@ -44,7 +44,7 @@ diff --git a/src/de/schildbach/pte/dto/Departure.java b/src/de/schildbach/pte/dt
 diff --git a/src/de/schildbach/pte/provider/hafas/AbstractHafasClientInterfaceProvider.java b/src/de/schildbach/pte/provider/hafas/AbstractHafasClientInterfaceProvider.java
 --- a/src/de/schildbach/pte/provider/hafas/AbstractHafasClientInterfaceProvider.java
 +++ b/src/de/schildbach/pte/provider/hafas/AbstractHafasClientInterfaceProvider.java
-@@ -696,10 +696,19 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
+@@ -696,10 +696,20 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                      final int prodX = stbStop.optInt(xProdX, -1);
                      final Line line = prodX != -1 ? lines.get(prodX) : null;
  
@@ -69,7 +69,7 @@ diff --git a/src/de/schildbach/pte/provider/hafas/AbstractHafasClientInterfacePr
                      checkState(location != null && location.type == LocationType.STATION);
                      if (equivsMode == EquivalentStationsMode.KEEP_DISTINCT && !location.id.equals(stationId))
                          continue;
-@@ -800,7 +809,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
+@@ -800,7 +810,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                                  cancelled,
                                  null,
                                  message,
