@@ -74,14 +74,26 @@ final class VbbStopPositions {
                 || matchesStationId(parentId, station.displayId);
     }
 
-    private static boolean matchesStationId(final String parentId, final @Nullable String stationId) {
+    static boolean matchesStationId(final String parentId, final @Nullable String stationId) {
         if (stationId == null)
             return false;
-        if (parentId.equals(stationId))
-            return true;
 
-        final int lastColon = stationId.lastIndexOf(':');
-        return lastColon >= 0 && parentId.equals(stationId.substring(lastColon + 1));
+        return normalizeStationId(parentId).equals(normalizeStationId(stationId));
+    }
+
+    private static String normalizeStationId(final String stationId) {
+        String id = stationId;
+        for (final String part : stationId.split(":")) {
+            if (part.length() >= 9 && part.length() <= 12 && part.chars().allMatch(Character::isDigit)) {
+                id = part;
+                break;
+            }
+        }
+
+        if (id.length() == 12 && "000".equals(id.substring(3, 6)))
+            return id.substring(0, 3) + id.substring(6);
+
+        return id;
     }
 
     static @Nullable Location find(

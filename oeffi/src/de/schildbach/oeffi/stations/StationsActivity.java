@@ -166,6 +166,7 @@ public class StationsActivity extends OeffiMainActivity implements StationsAware
     private final Map<String, Integer> favorites = new HashMap<>();
     private Station selectedStation;
     private List<Location> selectedStationPositions = Collections.emptyList();
+    private Location selectedStationPosition;
     private Point deviceLocation;
     private Location fixedLocation;
     private boolean fixedLocationResolving;
@@ -1640,6 +1641,17 @@ public class StationsActivity extends OeffiMainActivity implements StationsAware
         return selectedStationPositions;
     }
 
+    @Override
+    public final Location getSelectedStationPosition() {
+        return selectedStationPosition;
+    }
+
+    @Override
+    public final void selectStationPosition(final Location stationPosition) {
+        selectedStationPosition = stationPosition;
+        getMapView().invalidate();
+    }
+
     public final Integer getFavoriteState(final String stationId) {
         return favorites.get(stationId);
     }
@@ -1655,6 +1667,7 @@ public class StationsActivity extends OeffiMainActivity implements StationsAware
 
     private void loadSelectedStationPositions(final Station station) {
         selectedStationPositions = Collections.emptyList();
+        selectedStationPosition = null;
         getMapView().invalidate();
 
         if (station == null || station.location.id == null || !supportsVbbStopPositions())

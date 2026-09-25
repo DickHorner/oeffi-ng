@@ -30,6 +30,13 @@ public interface StationsAware {
         return Collections.emptyList();
     }
 
+    default Location getSelectedStationPosition() {
+        return null;
+    }
+
+    default void selectStationPosition(final Location stationPosition) {
+    }
+
     Integer getFavoriteState(String stationId);
 
     void selectStation(Station station);

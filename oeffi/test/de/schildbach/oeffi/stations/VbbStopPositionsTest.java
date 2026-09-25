@@ -1,7 +1,9 @@
 package de.schildbach.oeffi.stations;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -17,6 +19,15 @@ public class VbbStopPositionsTest {
     private static Location position(final String id, final String name) {
         return new Location(
                 LocationType.STATION, id, Point.fromDouble(52.456, 13.321), null, name);
+    }
+
+    @Test
+    public void matchesVbbStationIdVariants() {
+        assertTrue(VbbStopPositions.matchesStationId("900062202", "900062202"));
+        assertTrue(VbbStopPositions.matchesStationId("900062202", "900000062202"));
+        assertTrue(VbbStopPositions.matchesStationId("900062202", "de:11000:900062202"));
+        assertTrue(VbbStopPositions.matchesStationId("900062202", "de:11000:900000062202"));
+        assertFalse(VbbStopPositions.matchesStationId("900062202", "900000062282"));
     }
 
     @Test

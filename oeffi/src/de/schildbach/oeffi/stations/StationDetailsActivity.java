@@ -172,6 +172,7 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
     private Location selectedLocation;
     private Station selectedStation;
     private List<Location> selectedStationPositions = Collections.emptyList();
+    private Location selectedStationPosition;
     private CombinedStation selectedCombinedStation;
     private Location selectedCoord;
     private final Set<Product> products = new HashSet<>(Product.ALL_SELECTABLE);
@@ -784,6 +785,17 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
         return selectedStationPositions;
     }
 
+    @Override
+    public Location getSelectedStationPosition() {
+        return selectedStationPosition;
+    }
+
+    @Override
+    public void selectStationPosition(final Location stationPosition) {
+        selectedStationPosition = stationPosition;
+        getMapView().invalidate();
+    }
+
     public Integer getFavoriteState(final String stationId) {
         throw new UnsupportedOperationException();
     }
@@ -802,6 +814,7 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
 
     private void loadSelectedStationPositions(final Station station) {
         selectedStationPositions = Collections.emptyList();
+        selectedStationPosition = null;
         getMapView().invalidate();
 
         if (station.location.id == null || !supportsVbbStopPositions(station.network))
@@ -842,6 +855,7 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
 
                 if (stationPosition != null) {
                     setMapVisible(true);
+                    selectStationPosition(stationPosition);
                     getMapView().zoomToStations(List.of(stationPosition), 0);
                 }
             });

@@ -430,6 +430,7 @@ public class OsmDroidOeffiMapView extends MapView implements OeffiMapView.Implem
         final float tripStrokeWidthSelectedGlow;
         final int bubbleTextColor;
         final float stationPositionRadius;
+        final float stationPositionTapRadius;
         final Paint stationPositionFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         final Paint stationPositionStrokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
@@ -463,6 +464,8 @@ public class OsmDroidOeffiMapView extends MapView implements OeffiMapView.Implem
 
             stationPositionRadius = TypedValue.applyDimension(
                     TypedValue.COMPLEX_UNIT_DIP, 4f, res.getDisplayMetrics());
+            stationPositionTapRadius = TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP, 24f, res.getDisplayMetrics());
             stationPositionFillPaint.setStyle(Paint.Style.FILL);
             stationPositionFillPaint.setColor(Color.WHITE);
             stationPositionStrokePaint.setStyle(Paint.Style.STROKE);
@@ -664,12 +667,15 @@ public class OsmDroidOeffiMapView extends MapView implements OeffiMapView.Implem
                 }
 
                 if (stationsAware != null) {
+                    final Location selectedStationPosition = stationsAware.getSelectedStationPosition();
                     for (final Location stationPosition : stationsAware.getStationPositions()) {
                         if (stationPosition.hasCoord()) {
                             projection.toPixels(new GeoPoint(stationPosition.getLatAsDouble(),
                                     stationPosition.getLonAsDouble()), point);
-                            canvas.drawCircle(point.x, point.y, stationPositionRadius, stationPositionFillPaint);
-                            canvas.drawCircle(point.x, point.y, stationPositionRadius, stationPositionStrokePaint);
+                            final boolean selected = stationPosition.equals(selectedStationPosition);
+                            final float radius = selected ? stationPositionRadius * 1.5f : stationPositionRadius;
+                            canvas.drawCircle(point.x, point.y, radius, stationPositionFillPaint);
+                            canvas.drawCircle(point.x, point.y, radius, stationPositionStrokePaint);
                         }
                     }
 
@@ -717,7 +723,7 @@ public class OsmDroidOeffiMapView extends MapView implements OeffiMapView.Implem
                             }
                         }
 
-                        if (selectedStation != null) {
+                        if (selectedStation != null && selectedStationPosition == null) {
                             projection.toPixels(new GeoPoint(selectedStation.location.getLatAsDouble(),
                                     selectedStation.location.getLonAsDouble()), point);
                             final TextView bubble = new TextView(getContext());
@@ -738,6 +744,29 @@ public class OsmDroidOeffiMapView extends MapView implements OeffiMapView.Implem
                             canvas.save();
                             canvas.translate(point.x - width / 2,
                                     point.y - height - stationDefaultIcon.getIntrinsicHeight() / 2.5f);
+                            bubble.draw(canvas);
+                            canvas.restore();
+                        }
+
+                        if (selectedStationPosition != null && selectedStationPosition.hasCoord()) {
+                            projection.toPixels(new GeoPoint(selectedStationPosition.getLatAsDouble(),
+                                    selectedStationPosition.getLonAsDouble()), point);
+                            final TextView bubble = new TextView(getContext());
+                            bubble.setBackgroundResource(R.drawable.popup_dir_pointer_button);
+                            bubble.setText(selectedStationPosition.name);
+                            bubble.setTypeface(Typeface.DEFAULT_BOLD);
+                            bubble.setTextSize(TypedValue.COMPLEX_UNIT_PX, stationFontSize);
+                            bubble.setTextColor(bubbleTextColor);
+                            bubble.setIncludeFontPadding(false);
+                            bubble.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
+                                    MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+                            final int width = bubble.getMeasuredWidth();
+                            final int height = bubble.getMeasuredHeight();
+                            bubble.layout(point.x - width / 2, point.y - height / 2, point.x + width / 2,
+                                    point.y + height / 2);
+                            canvas.save();
+                            canvas.translate(point.x - width / 2,
+                                    point.y - height - stationPositionRadius * 2f);
                             bubble.draw(canvas);
                             canvas.restore();
                         }
@@ -793,6 +822,32 @@ public class OsmDroidOeffiMapView extends MapView implements OeffiMapView.Implem
 
             Station tappedStation = null;
             if (stationsAware != null) {
+                Location tappedStationPosition = null;
+                float tappedStationPositionDistanceSquared = 0;
+                final android.graphics.Point stationPositionPoint = new android.graphics.Point();
+                for (final Location stationPosition : stationsAware.getStationPositions()) {
+                    if (!stationPosition.hasCoord())
+                        continue;
+
+                    projection.toPixels(new GeoPoint(stationPosition.getLatAsDouble(),
+                            stationPosition.getLonAsDouble()), stationPositionPoint);
+                    final float dx = e.getX() - stationPositionPoint.x;
+                    final float dy = e.getY() - stationPositionPoint.y;
+                    final float distanceSquared = dx * dx + dy * dy;
+                    if (distanceSquared <= stationPositionTapRadius * stationPositionTapRadius
+                            && (tappedStationPosition == null
+                            || distanceSquared < tappedStationPositionDistanceSquared)) {
+                        tappedStationPosition = stationPosition;
+                        tappedStationPositionDistanceSquared = distanceSquared;
+                    }
+                }
+
+                if (tappedStationPosition != null) {
+                    stationsAware.selectStationPosition(tappedStationPosition);
+                    return true;
+                }
+
+                stationsAware.selectStationPosition(null);
                 float tappedStationDistance = 0;
 
                 final double allowedDistance = mapDiagonal / 20.0;
