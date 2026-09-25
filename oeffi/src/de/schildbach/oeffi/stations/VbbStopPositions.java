@@ -132,6 +132,24 @@ final class VbbStopPositions {
         return extractPositionLabel(location.name);
     }
 
+    static @Nullable Product markerProduct(final Location location) {
+        if (location.name == null)
+            return null;
+
+        final String lower = location.name.toLowerCase(Locale.ROOT);
+        if (lower.contains("bushalt") || lower.contains("ersatzhalt"))
+            return Product.BUS;
+        if (lower.contains("u-bahnsteig") || lower.contains("u bahnsteig"))
+            return Product.SUBWAY;
+        if (lower.contains("s-bahnsteig") || lower.contains("s bahnsteig"))
+            return Product.SUBURBAN_TRAIN;
+        if (lower.contains("tram") || lower.contains("straßenbahn"))
+            return Product.TRAM;
+        if (lower.contains("bahnsteig") || lower.contains("gleis"))
+            return Product.REGIONAL_TRAIN;
+        return null;
+    }
+
     private static String extractPositionKey(final String description) {
         final String label = extractPositionLabel(description);
         return label == null ? "" : normalizePositionKey(label);

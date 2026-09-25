@@ -688,7 +688,20 @@ public class OsmDroidOeffiMapView extends MapView implements OeffiMapView.Implem
                                     stationPosition.getLonAsDouble()), point);
                             final boolean selected = stationPosition.equals(selectedStationPosition);
                             final String positionLabel = stationsAware.getStationPositionLabel(stationPosition);
+
+                            final float anchorRadius;
+                            if (positionLabel != null)
+                                anchorRadius = stationPositionRadius * (selected ? 3.0f : 2.5f);
+                            else
+                                anchorRadius = stationPositionRadius * (selected ? 1.5f : 1.0f);
+                            canvas.drawCircle(point.x, point.y, anchorRadius, stationPositionFillPaint);
+                            canvas.drawCircle(point.x, point.y, anchorRadius, stationPositionStrokePaint);
+
                             if (positionLabel != null) {
+                                final Product positionProduct =
+                                        stationsAware.getStationPositionProduct(stationPosition);
+                                setStationPositionBadgeColors(positionProduct);
+
                                 final Paint.FontMetrics fontMetrics = stationPositionBadgeTextPaint.getFontMetrics();
                                 final float selectedPadding = selected ? stationPositionBadgePaddingVertical : 0f;
                                 final float halfWidth = stationPositionBadgeTextPaint.measureText(positionLabel) / 2f
@@ -700,10 +713,6 @@ public class OsmDroidOeffiMapView extends MapView implements OeffiMapView.Implem
                                         stationPositionBadgeFillPaint);
                                 final float baseline = point.y - (fontMetrics.ascent + fontMetrics.descent) / 2f;
                                 canvas.drawText(positionLabel, point.x, baseline, stationPositionBadgeTextPaint);
-                            } else {
-                                final float radius = selected ? stationPositionRadius * 1.5f : stationPositionRadius;
-                                canvas.drawCircle(point.x, point.y, radius, stationPositionFillPaint);
-                                canvas.drawCircle(point.x, point.y, radius, stationPositionStrokePaint);
                             }
                         }
                     }
@@ -801,6 +810,29 @@ public class OsmDroidOeffiMapView extends MapView implements OeffiMapView.Implem
                         }
                     }
                 }
+            }
+        }
+
+        private void setStationPositionBadgeColors(final Product product) {
+            if (product == Product.SUBWAY) {
+                stationPositionBadgeFillPaint.setColor(Color.rgb(21, 106, 184));
+                stationPositionBadgeTextPaint.setColor(Color.WHITE);
+            } else if (product == Product.SUBURBAN_TRAIN) {
+                stationPositionBadgeFillPaint.setColor(Color.rgb(0, 111, 53));
+                stationPositionBadgeTextPaint.setColor(Color.WHITE);
+            } else if (product == Product.TRAM) {
+                stationPositionBadgeFillPaint.setColor(Color.rgb(204, 0, 0));
+                stationPositionBadgeTextPaint.setColor(Color.WHITE);
+            } else if (product == Product.REGIONAL_TRAIN || product == Product.HIGH_SPEED_TRAIN) {
+                stationPositionBadgeFillPaint.setColor(Color.WHITE);
+                stationPositionBadgeTextPaint.setColor(Color.rgb(204, 0, 0));
+            } else if (product == Product.BUS || product == Product.COACH
+                    || product == Product.REPLACEMENT_SERVICE) {
+                stationPositionBadgeFillPaint.setColor(Color.BLACK);
+                stationPositionBadgeTextPaint.setColor(Color.WHITE);
+            } else {
+                stationPositionBadgeFillPaint.setColor(getResources().getColor(R.color.bg_position));
+                stationPositionBadgeTextPaint.setColor(getResources().getColor(R.color.fg_position));
             }
         }
 

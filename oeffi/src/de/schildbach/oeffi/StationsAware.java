@@ -19,6 +19,7 @@ package de.schildbach.oeffi;
 
 import de.schildbach.oeffi.stations.Station;
 import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.Product;
 
 import java.util.Collections;
 import java.util.List;
@@ -35,6 +36,10 @@ public interface StationsAware {
     }
 
     default String getStationPositionLabel(final Location stationPosition) {
+        return null;
+    }
+
+    default Product getStationPositionProduct(final Location stationPosition) {
         return null;
     }
 

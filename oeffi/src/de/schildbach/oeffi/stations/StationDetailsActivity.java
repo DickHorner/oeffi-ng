@@ -796,6 +796,11 @@ public class StationDetailsActivity extends OeffiActivity implements StationsAwa
     }
 
     @Override
+    public Product getStationPositionProduct(final Location stationPosition) {
+        return VbbStopPositions.markerProduct(stationPosition);
+    }
+
+    @Override
     public void selectStationPosition(final Location stationPosition) {
         selectedStationPosition = stationPosition;
         getMapView().invalidate();

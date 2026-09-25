@@ -42,6 +42,22 @@ public class VbbStopPositionsTest {
     }
 
     @Test
+    public void classifiesMarkerProducts() {
+        assertEquals(Product.BUS, VbbStopPositions.markerProduct(
+                position("bus", "Bushalt Schloßstraße Pos. 1")));
+        assertEquals(Product.SUBWAY, VbbStopPositions.markerProduct(
+                position("u", "U-Bahnsteig Gleis 1")));
+        assertEquals(Product.SUBURBAN_TRAIN, VbbStopPositions.markerProduct(
+                position("s", "S Bahnsteig Gleis 1")));
+        assertEquals(Product.TRAM, VbbStopPositions.markerProduct(
+                position("tram", "Tramsteig Pos. 2")));
+        assertEquals(Product.REGIONAL_TRAIN, VbbStopPositions.markerProduct(
+                position("rail", "Bahnsteig Gleis 4")));
+        assertNull(VbbStopPositions.markerProduct(
+                position("other", "Zugang Rathaus Steglitz")));
+    }
+
+    @Test
     public void resolvesSameNumberByProduct() {
         final Location bus = position("bus", "Bushalt Schloßstraße Pos. 1");
         final Location suburban = position("s", "S Bahnsteig Gleis 1");
