@@ -1,0 +1,81 @@
+diff --git a/src/de/schildbach/pte/dto/Departure.java b/src/de/schildbach/pte/dto/Departure.java
+--- a/src/de/schildbach/pte/dto/Departure.java
++++ b/src/de/schildbach/pte/dto/Departure.java
+@@ -47,6 +47,7 @@ public final class Departure implements Serializable {
+     public final @Nullable int[] capacity;
+     public final @Nullable String message;
+     public final @Nullable JourneyRef journeyRef;
++    public final @Nullable Location stationBoardLocation;
+ 
+     public Departure(
+             final boolean isArrival,
+@@ -60,6 +61,23 @@ public final class Departure implements Serializable {
+             final int[] capacity,
+             final String message,
+             final JourneyRef journeyRef) {
++        this(isArrival, plannedTime, predictedTime, line, plannedPosition, predictedPosition,
++                destination, cancelled, capacity, message, journeyRef, null);
++    }
++
++    public Departure(
++            final boolean isArrival,
++            final PTDate plannedTime,
++            final PTDate predictedTime,
++            final Line line,
++            final Position plannedPosition,
++            final Position predictedPosition,
++            final Destination destination,
++            final boolean cancelled,
++            final int[] capacity,
++            final String message,
++            final JourneyRef journeyRef,
++            final Location stationBoardLocation) {
+         this.isArrival = isArrival;
+         this.plannedTime = plannedTime;
+         this.predictedTime = predictedTime;
+@@ -72,6 +90,7 @@ public final class Departure implements Serializable {
+         this.capacity = capacity;
+         this.message = message;
+         this.journeyRef = journeyRef;
++        this.stationBoardLocation = stationBoardLocation;
+     }
+ 
+     public PTDate getTime() {
+diff --git a/src/de/schildbach/pte/provider/hafas/AbstractHafasClientInterfaceProvider.java b/src/de/schildbach/pte/provider/hafas/AbstractHafasClientInterfaceProvider.java
+--- a/src/de/schildbach/pte/provider/hafas/AbstractHafasClientInterfaceProvider.java
++++ b/src/de/schildbach/pte/provider/hafas/AbstractHafasClientInterfaceProvider.java
+@@ -696,10 +696,19 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
+                     final int prodX = stbStop.optInt(xProdX, -1);
+                     final Line line = prodX != -1 ? lines.get(prodX) : null;
+ 
+-                    final HashMap<Integer, MetaLocation> metaLocsByIndex = equivsMode == EquivalentStationsMode.KEEP_DISTINCT ? null : new HashMap<>();
+-                    final boolean alwaysUseMeta = equivsMode == EquivalentStationsMode.USE_META;
+-                    final LocationAndName locationAndName = parseLoc(locList, stbStop.getInt("locX"), metaLocsByIndex, alwaysUseMeta, crdSysList, locList);
+-                    final Location location = loc(locationAndName);
++                    final int locX = stbStop.getInt("locX");
++                    final Location stationBoardLocation = loc(parseLoc(
++                            locList, locX, null, false, crdSysList, locList));
++                    checkState(stationBoardLocation != null
++                            && stationBoardLocation.type == LocationType.STATION);
++
++                    final Location location;
++                    if (equivsMode == EquivalentStationsMode.KEEP_DISTINCT) {
++                        location = stationBoardLocation;
++                    } else {
++                        final HashMap<Integer, MetaLocation> metaLocsByIndex = new HashMap<>();
++                        final boolean alwaysUseMeta = equivsMode == EquivalentStationsMode.USE_META;
++                        location = loc(parseLoc(locList, locX, metaLocsByIndex, alwaysUseMeta, crdSysList, locList));
++                    }
+                     checkState(location != null && location.type == LocationType.STATION);
+                     if (equivsMode == EquivalentStationsMode.KEEP_DISTINCT && !location.id.equals(stationId))
+                         continue;
+@@ -800,7 +809,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
+                                 cancelled,
+                                 null,
+                                 message,
+-                                journeyId == null ? null : new HafasJourneyRef(journeyId));
++                                journeyId == null ? null : new HafasJourneyRef(journeyId),
++                                stationBoardLocation);
+ 
+                         StationDepartures stationDepartures = findStationDepartures(result.stationDepartures, location);
+                         if (stationDepartures == null) {

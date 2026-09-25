@@ -16,6 +16,9 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Apply public-transport-enabler patch
+        run: git -C public-transport-enabler apply ../patches/public-transport-enabler-station-board-location.patch
+
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
@@ -30,7 +33,10 @@ jobs:
       - name: Test and build debug APK
         working-directory: androidstudio
         run: |
-          bash ./gradlew :oeffi-studio:testNgDebugUnitTest --tests de.schildbach.oeffi.stations.VbbStopPositionsTest --stacktrace
+          bash ./gradlew :oeffi-studio:testNgDebugUnitTest \
+            --tests de.schildbach.oeffi.stations.VbbStopPositionsTest \
+            --tests de.schildbach.pte.dto.DepartureStationBoardLocationTest \
+            --stacktrace
           bash ./gradlew :oeffi-studio:assembleNgDebug --stacktrace
 
       - name: Upload debug APK
